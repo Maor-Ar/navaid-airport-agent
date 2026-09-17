@@ -9,7 +9,7 @@ param(
     [string]$Project = ""
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 if (-not $Project) {
     $Project = (gcloud config get-value project 2>$null).Trim()

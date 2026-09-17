@@ -5,10 +5,11 @@ Create the GitHub repo, wire Cloud Run IAM, set Actions secrets, and push main.
 This is the only command you should need after a GitHub browser login.
 
 .EXAMPLE
-.\scripts\go_live.ps1 -GcpProject YOUR_VERTEX_PROJECT
+.\scripts\go_live.ps1
+.\scripts\go_live.ps1 -GcpProject navaid-airport-agent
 #>
 param(
-    [string]$GcpProject = "",
+    [string]$GcpProject = "navaid-airport-agent",
     [string]$RepoName = "navaid-airport-agent",
     [switch]$Private
 )
@@ -44,9 +45,6 @@ if (-not $origin) {
     }
 }
 
-if (-not $GcpProject) {
-    $GcpProject = Read-Host "GCP project id for Cloud Run (Vertex AI / Gemini project, not Studio Buda unless you intend that)"
-}
 if (-not $GcpProject) {
     throw "GCP project is required. Re-run with -GcpProject YOUR_PROJECT"
 }

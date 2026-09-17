@@ -120,10 +120,26 @@ def cloud_project() -> str:
     )
 
 
-def adc_available() -> bool:
-    """True when an ADC JSON is on disk. Does not probe GCE metadata (avoids timeouts)."""
+def on_gcp_runtime() -> bool:
+    """Cloud Run / Cloud Functions attach ADC via the metadata server, not a JSON file."""
 
-    return adc_path() is not None
+    return bool(
+        os.getenv("K_SERVICE", "").strip()
+        or os.getenv("K_REVISION", "").strip()
+        or os.getenv("FUNCTION_TARGET", "").strip()
+        or os.getenv("CLOUD_RUN_JOB", "").strip()
+    )
+
+
+def adc_available() -> bool:
+    """True when Python can use Application Default Credentials.
+
+    Prefers an on-disk ADC JSON so local `gcloud auth application-default`
+    is detected without probing the metadata server (that probe can hang
+    off-GCP). Cloud Run sets K_SERVICE and uses the runtime service account.
+    """
+
+    return adc_path() is not None or on_gcp_runtime()
 
 
 def gemini_auth_mode() -> AuthMode:

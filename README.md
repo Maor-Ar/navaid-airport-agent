@@ -16,7 +16,7 @@ Python **3.12**. One local database. The only required cloud call is Google Gemi
 
 The designed analyst site serves the same three docs at `/architecture`, `/glossary`, and `/decisions`.
 
-**Deploy:** GitHub Pages (frontend) + Cloud Run (API). One command: `.\scripts\go_live.ps1 -GcpProject YOUR_VERTEX_PROJECT` — details in [docs/DEPLOY.md](docs/DEPLOY.md).
+**Deploy:** Cloud Run API is live at [https://navaid-931662514254.us-central1.run.app](https://navaid-931662514254.us-central1.run.app). GitHub Pages: `.\scripts\go_live.ps1` after `gh auth login --web`. Details in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Local run
 

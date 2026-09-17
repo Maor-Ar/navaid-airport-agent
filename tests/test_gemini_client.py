@@ -18,6 +18,10 @@ def _clear_keys(monkeypatch) -> None:
     monkeypatch.delenv("GCLOUD_PROJECT", raising=False)
     monkeypatch.delenv("GOOGLE_CLOUD_PROJECT_ID", raising=False)
     monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.delenv("K_SERVICE", raising=False)
+    monkeypatch.delenv("K_REVISION", raising=False)
+    monkeypatch.delenv("FUNCTION_TARGET", raising=False)
+    monkeypatch.delenv("CLOUD_RUN_JOB", raising=False)
     monkeypatch.setattr("navaid.gemini_client._gcloud_config_project", lambda: "")
     clear_auth_cache()
 
@@ -62,6 +66,16 @@ def test_gcloud_login_without_adc_is_not_enough(monkeypatch) -> None:
         raise AssertionError("expected RuntimeError")
     except RuntimeError as exc:
         assert "update-adc" in str(exc)
+
+
+def test_cloud_run_runtime_uses_vertex(monkeypatch) -> None:
+    _clear_keys(monkeypatch)
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "navaid-airport-agent")
+    monkeypatch.setenv("K_SERVICE", "navaid")
+    monkeypatch.setattr("navaid.gemini_client.adc_path", lambda: None)
+    clear_auth_cache()
+    assert gemini_auth_mode() == "vertex_adc"
+    assert gemini_configured() is True
 
 
 def test_unauthenticated_help(monkeypatch) -> None:
