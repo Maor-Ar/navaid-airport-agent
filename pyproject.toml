@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "navaid"
+version = "0.1.0"
+description = "Airport Investment Intelligence Agent — local DuckDB warehouse, deterministic TEOI traces, Gemini narration."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Navaid" }]
+keywords = ["airports", "investment", "teoi", "gemini", "duckdb"]
+dependencies = [
+    "google-genai>=1.0.0,<3",
+    "fastapi",
+    "uvicorn",
+    "gradio",
+    "duckdb",
+    "pydantic>=2",
+    "httpx",
+    "pandas",
+    "openpyxl",
+    "pytest",
+    "python-dotenv",
+]
+
+[project.scripts]
+navaid = "navaid.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/navaid"
+
+[tool.setuptools.packages.find]
+include = ["navaid*"]
+
+[tool.setuptools.package-data]
+navaid = [
+    "py.typed",
+    "warehouse/schema.sql",
+    "ui/site/templates/*.html",
+    "ui/site/static/css/*.css",
+    "ui/site/static/js/*.js",
+    "ui/site/static/*.svg",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

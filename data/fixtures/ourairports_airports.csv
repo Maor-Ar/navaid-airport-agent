@@ -1,0 +1,18 @@
+id,ident,type,name,latitude_deg,longitude_deg,elevation_ft,iso_country,iso_region,municipality,scheduled_service,iata_code
+1,KBOS,large_airport,General Edward Lawrence Logan International Airport,42.3643,-71.0052,20,US,US-MA,Boston,yes,BOS
+2,KBDL,medium_airport,Bradley International Airport,41.9389,-72.6832,173,US,US-CT,Windsor Locks,yes,BDL
+3,KPVD,medium_airport,Rhode Island T. F. Green International Airport,41.724,-71.4282,55,US,US-RI,Warwick,yes,PVD
+4,KPWM,medium_airport,Portland International Jetport,43.6462,-70.3093,76,US,US-ME,Portland,yes,PWM
+5,KMHT,medium_airport,Manchester-Boston Regional Airport,42.9326,-71.4357,266,US,US-NH,Manchester,yes,MHT
+6,KBTV,medium_airport,Patrick Leahy Burlington International Airport,44.4719,-73.1533,335,US,US-VT,Burlington,yes,BTV
+7,KBGR,medium_airport,Bangor International Airport,44.8074,-68.8281,192,US,US-ME,Bangor,yes,BGR
+8,KORH,small_airport,Worcester Regional Airport,42.2673,-71.8757,1009,US,US-MA,Worcester,yes,ORH
+9,KLAX,large_airport,Los Angeles International Airport,33.9425,-118.408,125,US,US-CA,Los Angeles,yes,LAX
+10,KSNA,medium_airport,John Wayne Airport-Orange County,33.6757,-117.868,56,US,US-CA,Santa Ana,yes,SNA
+11,KSFO,large_airport,San Francisco International Airport,37.6189,-122.375,13,US,US-CA,San Francisco,yes,SFO
+12,KOAK,medium_airport,Metropolitan Oakland International Airport,37.7213,-122.221,9,US,US-CA,Oakland,yes,OAK
+13,KSJC,medium_airport,Norman Y. Mineta San Jose International Airport,37.3626,-121.929,62,US,US-CA,San Jose,yes,SJC
+14,PANC,large_airport,Ted Stevens Anchorage International Airport,61.1744,-149.996,152,US,US-AK,Anchorage,yes,ANC
+15,KSAT,large_airport,San Antonio International Airport,29.5337,-98.4698,809,US,US-TX,San Antonio,yes,SAT
+16,HELIPAD1,heliport,Boston Heliport,42.36,-71.05,20,US,US-MA,Boston,no,
+17,EGLL,large_airport,London Heathrow Airport,51.4706,-0.4619,83,GB,GB-ENG,London,yes,LHR

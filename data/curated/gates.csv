@@ -1,0 +1,15 @@
+iata,icao,gate_count,as_of,source
+BOS,KBOS,102,2024-12-31,Massport Logan / curated (not in OurAirports)
+BDL,KBDL,23,2024-12-31,Connecticut Airport Authority / curated
+PVD,KPVD,22,2024-12-31,RIAC T.F. Green / curated
+PWM,KPWM,14,2024-12-31,Portland Jetport / curated
+MHT,KMHT,12,2024-12-31,MHT / curated
+BTV,KBTV,8,2024-12-31,Patrick Leahy Burlington / curated
+BGR,KBGR,8,2024-12-31,Bangor International / curated
+ORH,KORH,4,2024-12-31,Worcester Regional / curated
+LAX,KLAX,146,2024-12-31,LAWA / curated
+SNA,KSNA,20,2024-12-31,John Wayne Airport / curated
+SFO,KSFO,115,2024-12-31,SFO / curated
+OAK,KOAK,29,2024-12-31,Port of Oakland / curated
+SJC,KSJC,28,2024-12-31,Mineta San Jose / curated
+ANC,PANC,22,2024-12-31,Ted Stevens Anchorage / curated

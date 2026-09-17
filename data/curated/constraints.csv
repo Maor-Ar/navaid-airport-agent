@@ -1,0 +1,15 @@
+iata,icao,constraint_type,curfew,notes,as_of
+BOS,KBOS,mixed,,"Logan is both landside-constrained (terminals/curb) and airside-constrained (weather, airspace, runway geometry). Terminal capex helps but does not create IFR slots in marine-layer/nor'easter programs.",2024-12-31
+BDL,KBDL,landside,,"Bradley: spare airside capacity relative to the terminal; landside/gates/holdrooms are the binding constraint for expansion ROI.",2024-12-31
+PVD,KPVD,landside,,"T.F. Green: regional landside-bound; leakage to BOS is the demand risk not a runway cap.",2024-12-31
+PWM,KPWM,landside,,"Portland Jetport (Maine, not PDX): landside/terminal bound; airside is not the limiter.",2024-12-31
+MHT,KMHT,landside,,"Manchester-Boston Regional: landside-bound with Boston-CBSA leakage. Terminal throughput can recapture some leakage; demand is not the only story.",2024-12-31
+BTV,KBTV,demand-bound,,"Burlington: catchment and schedule depth bind before gates. Expansion is speculative without demand.",2024-12-31
+BGR,KBGR,demand-bound,,"Bangor: non-hub primary; demand-bound. Terminal renovation does not unlock a large passenger surplus.",2024-12-31
+ORH,KORH,demand-bound,,"Worcester Regional: thin commercial schedule; demand-bound inside the Boston CBSA.",2024-12-31
+LAX,KLAX,mixed,,"LAX wins absolute delay volume. Airside (airspace/taxiways) and landside (terminals/curb) both bind; compare with SNA on utilization and curfew, not a single congestion score.",2024-12-31
+SNA,KSNA,airside,22:00-07:00 local (commercial departure limits; John Wayne noise ordinance),"Santa Ana / John Wayne is curfew-capped and departure-limited. More terminal does not create night slots. Not SAT (San Antonio).",2024-12-31
+SFO,KSFO,airside,Level-2 schedule facilitation; frequent Ground Delay Programs (marine layer),"SFO unmet demand is mostly airside/policy (slots/weather/GDP), not a missing concourse. Leakage to OAK/SJC is the same-catchment story.",2024-12-31
+OAK,KOAK,landside,,"Oakland: Bay Area leakage destination from SFO; landside/terminal is the more plausible capex unlock.",2024-12-31
+SJC,KSJC,landside,,"San Jose: Bay Area leakage destination from SFO; landside-bound relative to SFO's airside cap.",2024-12-31
+ANC,PANC,mixed,,"Anchorage: weather/airside plus a cargo-heavy mix. Passenger long-haul is a T-100 segment fact (ANC-JFK ~5420 km); cargo out unless asked.",2024-12-31

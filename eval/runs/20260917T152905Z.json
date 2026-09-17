@@ -1,0 +1,1372 @@
+{
+  "created_at": "2026-09-17T15:29:05.886484+00:00",
+  "use_gemini": false,
+  "gold_path": "C:\\Users\\maora\\OneDrive\\\u05de\u05e1\u05de\u05db\u05d9\u05dd\\GitHub\\Deloitte Assignment\\eval\\gold\\questions.jsonl",
+  "item_count": 42,
+  "kpis": {
+    "subgoal_coverage": 1.0,
+    "intent_accuracy": 1.0,
+    "entity_f1": 0.9702824996942644,
+    "kendall_tau": 1.0,
+    "numeric_hit_rate": 1.0,
+    "hallucination_rate": 0.0,
+    "envelope_completeness": 1.0,
+    "must_say": 1.0,
+    "must_not_say": 1.0,
+    "reconstruction_match": 1.0,
+    "pass_rate": 1.0,
+    "n_items": 42,
+    "n_pass": 42,
+    "n_fail": 0,
+    "mean_latency_ms": 871.1043095233998
+  },
+  "items": [
+    {
+      "id": "assign_ne_expansion",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Which airports in New England are strong candidates for terminal expansion?",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 171.15980000016862
+    },
+    {
+      "id": "assign_lax_sna_congestion",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare LA and Santa Ana airport congestion levels.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 2398.2259999975213
+    },
+    {
+      "id": "assign_anc_longhaul",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the percentage of long haul flights out of Anchorage airport?",
+      "intents": [
+        "LONGHAUL_SHARE"
+      ],
+      "entities": [
+        "ANC"
+      ],
+      "ranking": [],
+      "latency_ms": 148.53450000009616
+    },
+    {
+      "id": "assign_sfo_unmet",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet flight demand in SFO airport and why?",
+      "intents": [
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "SFO"
+      ],
+      "ranking": [],
+      "latency_ms": 101.35380000065197
+    },
+    {
+      "id": "compound_ne_lax_buy_aal",
+      "family": "compound",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Which New England airports are strong expansion candidates, compare LAX and SNA congestion, and should I buy AAL?",
+      "intents": [
+        "UNSUPPORTED",
+        "EXPANSION_RANK",
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM",
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 2198.4718999992765
+    },
+    {
+      "id": "compound_ne_sfo",
+      "family": "compound",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank New England expansion candidates and what is SFO unmet demand?",
+      "intents": [
+        "EXPANSION_RANK",
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM",
+        "SFO"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 217.6904999978433
+    },
+    {
+      "id": "compound_three_intents",
+      "family": "compound",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 0.8235294117647058,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank New England terminal expansion candidates, compare LAX and SNA congestion, and what is the long-haul share out of Anchorage?",
+      "intents": [
+        "EXPANSION_RANK",
+        "LONGHAUL_SHARE",
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM",
+        "ANC",
+        "LAX"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 2521.4268999989145
+    },
+    {
+      "id": "compound_sfo_oak_sjc",
+      "family": "compound",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet demand in SFO and compare congestion at SFO, OAK, and SJC?",
+      "intents": [
+        "CONGESTION_COMPARE",
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "SFO",
+        "OAK",
+        "SJC"
+      ],
+      "ranking": [],
+      "latency_ms": 3908.7631999973382
+    },
+    {
+      "id": "fu_those_two",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "Compare constraint type and curfew for LAX vs SNA using last congestion payload; re-run only if needed.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 6487.407399999938
+    },
+    {
+      "id": "fu_why_rank_2",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 0.7692307692307693,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "Explain TEOI traces for rank 2 vs rank 3 in peer set [BDL, BGR, BOS, BTV, MHT, ORH, PVD, PWM]",
+      "intents": [
+        "EXPLAIN_TEOI"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [],
+      "latency_ms": 333.2477999974799
+    },
+    {
+      "id": "fu_add_pwm",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "Rank terminal expansion candidates in peer set [BOS, BDL, PVD, MHT, PWM] using the same TEOI recipe; add PWM",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "MHT",
+        "PWM"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT"
+      ],
+      "latency_ms": 326.33139999961713
+    },
+    {
+      "id": "fu_anc_cargo",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "What is the long-haul share out of ANC including cargo",
+      "intents": [
+        "LONGHAUL_SHARE"
+      ],
+      "entities": [
+        "ANC"
+      ],
+      "ranking": [],
+      "latency_ms": 196.01680000050692
+    },
+    {
+      "id": "fu_independent_sfo",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet flight demand in SFO airport and why?",
+      "intents": [
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "SFO"
+      ],
+      "ranking": [],
+      "latency_ms": 345.7096999991336
+    },
+    {
+      "id": "adv_buy_aal",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": null,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Should I buy AAL stock?",
+      "intents": [
+        "UNSUPPORTED",
+        "UNSUPPORTED"
+      ],
+      "entities": [],
+      "ranking": [],
+      "latency_ms": 91.32649999810383
+    },
+    {
+      "id": "adv_restaurant_lax",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the best restaurant at LAX?",
+      "intents": [
+        "AIRPORT_BRIEF",
+        "UNSUPPORTED"
+      ],
+      "entities": [
+        "LAX"
+      ],
+      "ranking": [],
+      "latency_ms": 201.8315999994229
+    },
+    {
+      "id": "adv_empty_icao",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": null,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport brief for ICAO code",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [],
+      "ranking": [],
+      "latency_ms": 246.95760000031441
+    },
+    {
+      "id": "adv_santa_ana_vs_san_antonio",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare Santa Ana and San Antonio congestion levels.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "SNA",
+        "SAT"
+      ],
+      "ranking": [],
+      "latency_ms": 2861.263800001325
+    },
+    {
+      "id": "adv_la_is_lax",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport brief for LA",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "LAX"
+      ],
+      "ranking": [],
+      "latency_ms": 218.06379999907222
+    },
+    {
+      "id": "adv_pwm_not_pdx",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport brief for Portland",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "PWM"
+      ],
+      "ranking": [],
+      "latency_ms": 192.65679999807617
+    },
+    {
+      "id": "env_missing_gates_sat",
+      "family": "envelope",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank SAT, LAX, and SNA for terminal expansion",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "SAT",
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [
+        "LAX",
+        "SAT",
+        "SNA"
+      ],
+      "latency_ms": 123.58739999763202
+    },
+    {
+      "id": "env_live_congestion",
+      "family": "envelope",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare LAX and SNA congestion levels including live FAA status.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 2517.0273000003363
+    },
+    {
+      "id": "env_sfo_airside",
+      "family": "envelope",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet flight demand in SFO airport and why?",
+      "intents": [
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "SFO"
+      ],
+      "ranking": [],
+      "latency_ms": 120.08999999670777
+    },
+    {
+      "id": "rank_ne_full",
+      "family": "ranking",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 0.7692307692307693,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank New England airports for terminal expansion opportunity",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 241.52489999687532
+    },
+    {
+      "id": "rank_bdl_pvd_pwm",
+      "family": "ranking",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank BDL, PVD, and PWM for terminal expansion",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [
+        "BDL",
+        "PVD",
+        "PWM"
+      ],
+      "latency_ms": 169.51690000132658
+    },
+    {
+      "id": "rank_landside_regionals",
+      "family": "ranking",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Which of BDL, PVD, PWM, and MHT are strong candidates for terminal expansion?",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT"
+      ],
+      "ranking": [
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT"
+      ],
+      "latency_ms": 213.23490000213496
+    },
+    {
+      "id": "rank_bos_bdl",
+      "family": "ranking",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Rank BOS and BDL for terminal expansion",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BOS",
+        "BDL"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL"
+      ],
+      "latency_ms": 168.3039000017743
+    },
+    {
+      "id": "numeric_longhaul_bos",
+      "family": "numeric",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the percentage of long haul flights out of Boston airport?",
+      "intents": [
+        "LONGHAUL_SHARE"
+      ],
+      "entities": [
+        "BOS"
+      ],
+      "ranking": [],
+      "latency_ms": 125.45739999768557
+    },
+    {
+      "id": "numeric_unmet_oak",
+      "family": "numeric",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet flight demand in OAK airport and why?",
+      "intents": [
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "OAK"
+      ],
+      "ranking": [],
+      "latency_ms": 139.4323999993503
+    },
+    {
+      "id": "numeric_unmet_lax",
+      "family": "numeric",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the unmet flight demand in LAX airport and why?",
+      "intents": [
+        "UNMET_DEMAND"
+      ],
+      "entities": [
+        "LAX"
+      ],
+      "ranking": [],
+      "latency_ms": 146.15709999998217
+    },
+    {
+      "id": "congestion_sfo_oak",
+      "family": "numeric",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare SFO and OAK congestion levels.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "SFO",
+        "OAK"
+      ],
+      "ranking": [],
+      "latency_ms": 2591.3964999999735
+    },
+    {
+      "id": "brief_bdl",
+      "family": "brief",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport brief and metrics snapshot for BDL",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "BDL"
+      ],
+      "ranking": [],
+      "latency_ms": 164.02759999982663
+    },
+    {
+      "id": "brief_sna",
+      "family": "brief",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport brief for SNA",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 176.44170000130543
+    },
+    {
+      "id": "brief_anc",
+      "family": "brief",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Give me an airport profile for Anchorage",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "ANC"
+      ],
+      "ranking": [],
+      "latency_ms": 176.08570000084
+    },
+    {
+      "id": "brief_sfo",
+      "family": "brief",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Airport metrics snapshot for SFO",
+      "intents": [
+        "AIRPORT_BRIEF"
+      ],
+      "entities": [
+        "SFO"
+      ],
+      "ranking": [],
+      "latency_ms": 208.59779999955208
+    },
+    {
+      "id": "assign_ne_wording_alt",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 0.7692307692307693,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": null,
+        "must_not_say": 1.0,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Which New England airports are strong candidates for terminal renovation?",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 201.70950000101584
+    },
+    {
+      "id": "congestion_lax_sna_codes",
+      "family": "assignment",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare LAX and SNA congestion levels.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 2768.7184999995225
+    },
+    {
+      "id": "unsupported_stock",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": null,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the AAL share price and should I buy the ticker?",
+      "intents": [
+        "UNSUPPORTED",
+        "UNSUPPORTED"
+      ],
+      "entities": [],
+      "ranking": [],
+      "latency_ms": 72.91880000047968
+    },
+    {
+      "id": "unsupported_restaurant_only",
+      "family": "adversarial",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": null,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Recommend a restaurant near the airport",
+      "intents": [
+        "UNSUPPORTED"
+      ],
+      "entities": [],
+      "ranking": [],
+      "latency_ms": 80.77749999938533
+    },
+    {
+      "id": "longhaul_anc_units",
+      "family": "numeric",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "What is the percentage of long-haul flights out of ANC?",
+      "intents": [
+        "LONGHAUL_SHARE"
+      ],
+      "entities": [
+        "ANC"
+      ],
+      "ranking": [],
+      "latency_ms": 85.32150000246475
+    },
+    {
+      "id": "explain_teoi_dialog",
+      "family": "followup",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": null,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": 1.0,
+        "pass": true
+      },
+      "reconstructed_query": "Explain TEOI traces for rank 2 vs rank 3 in peer set [BDL, PVD, PWM]",
+      "intents": [
+        "EXPLAIN_TEOI"
+      ],
+      "entities": [
+        "BDL",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [],
+      "latency_ms": 192.87489999987883
+    },
+    {
+      "id": "congestion_sna_constraint",
+      "family": "envelope",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 1.0,
+        "kendall_tau": null,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Compare LAX vs SNA congestion and constraint type.",
+      "intents": [
+        "CONGESTION_COMPARE"
+      ],
+      "entities": [
+        "LAX",
+        "SNA"
+      ],
+      "ranking": [],
+      "latency_ms": 2165.518999998312
+    },
+    {
+      "id": "ne_includes_core_five",
+      "family": "ranking",
+      "pass": true,
+      "failures": [],
+      "scores": {
+        "subgoal_coverage": 1.0,
+        "intent_accuracy": 1.0,
+        "entity_f1": 0.7692307692307693,
+        "kendall_tau": 1.0,
+        "numeric_hit_rate": null,
+        "hallucination_rate": 0.0,
+        "envelope_completeness": 1.0,
+        "must_say": 1.0,
+        "must_not_say": null,
+        "reconstruction_match": null,
+        "pass": true
+      },
+      "reconstructed_query": "Which airports in New England (including BOS, BDL, PVD, PWM, MHT) are expansion candidates?",
+      "intents": [
+        "EXPANSION_RANK"
+      ],
+      "entities": [
+        "BDL",
+        "BGR",
+        "BOS",
+        "BTV",
+        "MHT",
+        "ORH",
+        "PVD",
+        "PWM"
+      ],
+      "ranking": [
+        "BOS",
+        "BDL",
+        "PVD",
+        "PWM",
+        "MHT",
+        "BTV",
+        "BGR",
+        "ORH"
+      ],
+      "latency_ms": 571.220000001631
+    }
+  ],
+  "failed_ids": []
+}

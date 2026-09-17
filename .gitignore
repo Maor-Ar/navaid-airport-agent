@@ -1,0 +1,34 @@
+# Local warehouse snapshots
+data/warehouse/*.duckdb
+data/warehouse/*.duckdb.wal
+data/warehouse/*.duckdb.tmp
+
+# HTTP cache for ingest downloads
+data/cache/
+
+# Secrets
+.env
+gcp-sa*.json
+
+# GitHub Pages export
+site-dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtualenv
+.venv/
+venv/
+
+# Test / type caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/

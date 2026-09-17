@@ -1,0 +1,394 @@
+iata,state,faa_region,name,hub_size,enplanements,prior_enplanements,yoy,year
+ATL,GA,SO,Atlanta Hartsfield/Jackson Atlanta International,Large,52511402,50950068,0.0306,2024
+DFW,TX,SW,Fort Worth Dallas-Fort Worth International,Large,42351316,39246212,0.0791,2024
+DEN,CO,NM,Denver Denver International,Large,40012895,37863967,0.0568,2024
+ORD,IL,GL,Chicago Chicago O'Hare International,Large,38575693,35843104,0.0762,2024
+LAX,CA,WP,Los Angeles Los Angeles International,Large,37760834,40956673,-0.078,2024
+JFK,NY,EA,New York John F Kennedy International,Large,31466102,30804355,0.0215,2024
+CLT,NC,SO,Charlotte Charlotte/Douglas International,Large,28523822,25896224,0.1015,2024
+LAS,NV,WP,Las Vegas Harry Reid International,Large,28244966,27896199,0.0125,2024
+MCO,FL,SO,Orlando Orlando International,Large,27859783,28033205,-0.0062,2024
+MIA,FL,SO,Miami Miami International,Large,26588002,24717048,0.0757,2024
+PHX,AZ,WP,Phoenix Phoenix Sky Harbor International,Large,25595723,23880504,0.0718,2024
+SEA,WA,NM,Seattle Seattle-Tacoma International,Large,25414592,24594210,0.0334,2024
+SFO,CA,WP,San Francisco International Airport San Francisco International,Large,25078968,24191159,0.0367,2024
+EWR,NJ,EA,Newark Newark Liberty International,Large,24544320,24575320,-0.0013,2024
+IAH,TX,SW,Houston George Bush Intcntl/Houston,Large,23349157,22228844,0.0504,2024
+BOS,MA,NE,Boston General Edward Lawrence Logan International,Large,21090721,19962678,0.0565,2024
+MSP,MN,GL,Minneapolis Minneapolis-St Paul International/Wold-Chamberlain,Large,18054481,17019128,0.0608,2024
+FLL,FL,SO,Fort Lauderdale Fort Lauderdale/Hollywood International,Large,17096131,17063063,0.0019,2024
+LGA,NY,EA,New York Laguardia,Large,16715567,16173073,0.0335,2024
+DTW,MI,GL,Detroit Detroit Metro Wayne County,Large,16110696,15378601,0.0476,2024
+PHL,PA,EA,Philadelphia Philadelphia International,Large,15102261,13658669,0.1057,2024
+SLC,UT,NM,Salt Lake City Salt Lake City International,Large,13543570,12905368,0.0495,2024
+BWI,MD,EA,Glen Burnie Baltimore/Washington International Thurgood Marshall,Large,13221461,12849721,0.0289,2024
+IAD,VA,EA,Dulles Washington Dulles International,Large,13003234,12073571,0.077,2024
+SAN,CA,WP,San Diego San Diego International,Large,12780013,12190183,0.0484,2024
+DCA,VA,EA,Arlington Ronald Reagan Washington Ntl,Large,12750892,12365030,0.0312,2024
+TPA,FL,SO,Tampa Tampa International,Large,12075591,11677632,0.0341,2024
+BNA,TN,SO,Nashville Nashville International,Large,12058688,11227243,0.0741,2024
+AUS,TX,SW,Austin Austin-Bergstrom International,Large,10678073,10833443,-0.0143,2024
+HNL,HI,WP,Honolulu Daniel K Inouye International,Large,10449022,10149761,0.0295,2024
+MDW,IL,GL,Chicago Chicago Midway International,Large,10360093,10659520,-0.0281,2024
+DAL,TX,SW,Dallas Dallas Love Field,Medium,8654991,8559052,0.0112,2024
+PDX,OR,NM,Portland Portland International,Medium,8639088,8123054,0.0635,2024
+STL,MO,CE,St. Louis St Louis Lambert International,Medium,7807362,7307561,0.0684,2024
+RDU,NC,SO,Raleigh Raleigh-Durham International,Medium,7584394,7119040,0.0654,2024
+HOU,TX,SW,Houston William P Hobby,Medium,7116967,6800320,0.0466,2024
+SMF,CA,WP,Sacramento Sacramento International,Medium,6679426,6371910,0.0483,2024
+MSY,LA,SW,Kenner Louis Armstrong New Orleans International,Medium,6537092,6309212,0.0361,2024
+SJU,PR,SO,San Juan Luis Munoz Marin International,Medium,6490669,5985001,0.0845,2024
+MCI,MO,CE,Kansas City Kansas City International,Medium,5915078,5654068,0.0462,2024
+SJC,CA,WP,San Jose Norman Y Mineta San Jose International,Medium,5822019,5958855,-0.023,2024
+SAT,TX,SW,San Antonio San Antonio International,Medium,5466684,5336684,0.0244,2024
+RSW,FL,SO,Fort Myers Southwest Florida International,Medium,5425293,4963269,0.0931,2024
+SNA,CA,WP,Santa Ana John Wayne/Orange County,Medium,5370273,5706332,-0.0589,2024
+OAK,CA,WP,Oakland Oakland San Francisco Bay,Medium,5292736,5520812,-0.0413,2024
+IND,IN,GL,Indianapolis Indianapolis International,Medium,5181947,4788376,0.0822,2024
+CLE,OH,GL,Cleveland Cleveland-Hopkins International,Medium,4950345,4803822,0.0305,2024
+PIT,PA,EA,Pittsburgh Pittsburgh International,Medium,4862376,4493052,0.0822,2024
+CVG,KY,SO,Hebron Cincinnati/Northern Kentucky International,Medium,4500414,4287722,0.0496,2024
+CMH,OH,GL,Columbus John Glenn Columbus International,Medium,4387395,4095189,0.0714,2024
+PBI,FL,SO,West Palm Beach Palm Beach International,Medium,4127211,3815977,0.0816,2024
+JAX,FL,SO,Jacksonville Jacksonville International,Medium,3749791,3619739,0.0359,2024
+ONT,CA,WP,Ontario Ontario International,Medium,3494554,3181161,0.0985,2024
+OGG,HI,WP,Kahului Kahului,Medium,3415615,3745866,-0.0882,2024
+BUR,CA,WP,Burbank Bob Hope,Medium,3383237,3132029,0.0802,2024
+BDL,CT,NE,Windsor Locks Bradley International,Medium,3285194,3122212,0.0522,2024
+CHS,SC,SO,Charleston Charleston AFB/International,Medium,3115194,3032768,0.0272,2024
+MKE,WI,GL,Milwaukee General Mitchell International,Medium,3104054,2959840,0.0487,2024
+ANC,AK,AL,Anchorage Ted Stevens Anchorage International,Medium,2767856,2681818,0.0321,2024
+ABQ,NM,SW,Albuquerque Albuquerque International Sunport,Medium,2690218,2605163,0.0326,2024
+OMA,NE,CE,Omaha Eppley Airfield,Medium,2583212,2464418,0.0482,2024
+BUF,NY,EA,Buffalo Buffalo Niagara International,Medium,2499295,2291995,0.0904,2024
+BOI,ID,NM,Boise Boise Air Trml/Gowen Field,Medium,2475370,2369164,0.0448,2024
+RIC,VA,EA,Highland Springs Richmond International,Small,2456422,2399239,0.0238,2024
+ORF,VA,EA,Norfolk Norfolk International,Small,2444897,2307899,0.0594,2024
+MEM,TN,SO,Memphis Memphis International,Small,2439366,2399876,0.0165,2024
+RNO,NV,WP,Reno Reno/Tahoe International,Small,2377780,2251825,0.0559,2024
+SDF,KY,SO,Louisville Louisville Muhammad Ali International,Small,2343305,2268034,0.0332,2024
+OKC,OK,SW,Oklahoma City Okc Will Rogers International,Small,2243575,2135106,0.0508,2024
+SRQ,FL,SO,Sarasota Sarasota/Bradenton International,Small,2112417,2144736,-0.0151,2024
+ELP,TX,SW,El Paso El Paso International,Small,2071894,2018137,0.0266,2024
+GRR,MI,GL,Grand Rapids Gerald R Ford International,Small,2065053,1899740,0.087,2024
+GEG,WA,NM,Spokane Spokane International,Small,2064142,2002286,0.0309,2024
+LGB,CA,WP,Long Beach Long Beach (Daugherty Field),Small,2031810,1837634,0.1057,2024
+KOA,HI,WP,Kailua Kona Ellison Onizuka Kona International at Keahole,Small,2023899,2097042,-0.0349,2024
+SAV,GA,SO,Savannah Savannah/Hilton Head International,Small,2020753,1909590,0.0582,2024
+PVD,RI,NE,Warwick Rhode Island Tf Green International,Small,1984916,1732909,0.1454,2024
+TUS,AZ,WP,Tucson International Airport Tucson International,Small,1959789,1925546,0.0178,2024
+MYR,SC,SO,Myrtle Beach Myrtle Beach International,Small,1894929,1658984,0.1422,2024
+LIH,HI,WP,Lihue Lihue,Small,1776627,1814359,-0.0208,2024
+TYS,TN,SO,Alcoa McGhee Tyson,Small,1639080,1382197,0.1859,2024
+TUL,OK,SW,Tulsa Tulsa International,Small,1627181,1571600,0.0354,2024
+PSP,CA,WP,Palm Springs Palm Springs International,Small,1617586,1625327,-0.0048,2024
+BHM,AL,SO,Birmingham Birmingham-Shuttlesworth International,Small,1596510,1499027,0.065,2024
+DSM,IA,CE,Des Moines Des Moines International,Small,1555454,1519262,0.0238,2024
+PNS,FL,SO,Pensacola Pensacola International,Small,1528204,1365976,0.1188,2024
+ALB,NY,EA,Albany Albany International,Small,1490673,1376492,0.083,2024
+SYR,NY,EA,Syracuse Syracuse Hancock International,Small,1486554,1412853,0.0522,2024
+SFB,FL,SO,Sanford Orlando Sanford International,Small,1412954,1446884,-0.0235,2024
+GSP,SC,SO,Greer Greenville Spartanburg International,Small,1412702,1258724,0.1223,2024
+ROC,NY,EA,Rochester Frederick Douglass/Greater Rochester International,Small,1331837,1325357,0.0049,2024
+BZN,MT,NM,Bozeman Bozeman Yellowstone International,Small,1321790,1230110,0.0745,2024
+FAT,CA,WP,Fresno Fresno Yosemite International,Small,1318250,1201789,0.0969,2024
+COS,CO,NM,Colorado Springs City of Colorado Springs Municipal,Small,1248261,1192123,0.0471,2024
+PIE,FL,SO,Clearwater St Pete-Clearwater International,Small,1228048,1246323,-0.0147,2024
+PWM,ME,NE,Portland Portland International Jetport,Small,1221913,1114714,0.0962,2024
+HPN,NY,EA,White Plains Westchester County,Small,1182384,1156719,0.0222,2024
+VPS,FL,SO,Valparaiso Eglin AFB/Destin-Ft Walton Beach,Small,1164880,1116717,0.0431,2024
+MSN,WI,GL,Madison Dane County Regional/Truax Field,Small,1156399,1037983,0.1141,2024
+LIT,AR,SW,Little Rock Bill and Hillary Clinton Ntl/Adams Field,Small,1145693,1097472,0.0439,2024
+XNA,AR,SW,Bentonville Northwest Arkansas Ntl,Small,1123106,972907,0.1544,2024
+AVL,NC,SO,Asheville Asheville Regional,Small,1096465,1125935,-0.0262,2024
+GSO,NC,SO,Greensboro Piedmont Triad International,Small,985563,903776,0.0905,2024
+IWA,AZ,WP,Mesa Mesa Gateway,Small,978296,964132,0.0147,2024
+PGD,FL,SO,Punta Gorda Punta Gorda,Small,957136,949732,0.0078,2024
+GUM,GU,WP,Tamuning Guam International,Small,932832,860519,0.084,2024
+ECP,FL,SO,Panama City Northwest Florida Beaches International,Small,918470,816642,0.1247,2024
+ICT,KS,CE,Wichita Wichita Dwight D Eisenhower Ntl,Small,885585,843273,0.0502,2024
+EUG,OR,NM,Eugene Mahlon Sweet Field,Small,824952,841919,-0.0202,2024
+STT,VI,SO,Charlotte Amalie Cyril E King,Small,821945,705196,0.1656,2024
+HSV,AL,SO,Huntsville Huntsville International-Carl T Jones Field,Small,804665,724147,0.1112,2024
+LEX,KY,SO,Lexington Blue Grass,Small,776297,665667,0.1662,2024
+MAF,TX,SW,Midland Midland International Air And Space Port,Small,761865,684419,0.1132,2024
+CID,IA,CE,Cedar Rapids The Eastern Iowa,Small,759978,691094,0.0997,2024
+EYW,FL,SO,Key West Key West International,Small,740762,675343,0.0969,2024
+ILM,NC,SO,Wilmington Wilmington International,Small,737065,655912,0.1237,2024
+MDT,PA,EA,Harrisburg Harrisburg International,Small,727163,654791,0.1105,2024
+SGF,MO,CE,Springfield Springfield-Branson Ntl,Small,702338,632705,0.1101,2024
+FSD,SD,GL,Sioux Falls Joe Foss Field,Small,701353,655505,0.0699,2024
+SBA,CA,WP,Santa Barbara Santa Barbara Municipal,Small,696396,638802,0.0902,2024
+ISP,NY,EA,Islip Long Island MacArthur,Small,682804,641423,0.0645,2024
+ITO,HI,WP,Hilo Hilo International,Small,680640,684175,-0.0052,2024
+BTV,VT,NE,Burlington Patrick Leahy Burlington International,Small,670636,649557,0.0325,2024
+CAE,SC,SO,Columbia Columbia Metro,Small,654460,593590,0.1025,2024
+MHT,NH,NE,Manchester Manchester Boston Regional,Small,633257,645158,-0.0184,2024
+MFE,TX,SW,McAllen McAllen International,Small,625670,513770,0.2178,2024
+DAY,OH,GL,Dayton James M Cox Dayton International,Small,624995,594188,0.0518,2024
+JAN,MS,SO,Jackson Jackson-Medgar Wiley Evers International,Small,616695,628321,-0.0185,2024
+HRL,TX,SW,Harlingen Valley International,Small,603561,536510,0.125,2024
+RDM,OR,NM,Redmond Roberts Field,Small,601152,558804,0.0758,2024
+HVN,CT,NE,New Haven Tweed/New Haven,Small,589409,490255,0.2022,2024
+FAI,AK,AL,Fairbanks Fairbanks International,Small,574012,548679,0.0462,2024
+LBB,TX,SW,Lubbock Lubbock Preston Smith International,Small,563180,543363,0.0365,2024
+CHA,TN,SO,Chattanooga Lovell Field,Small,557741,488024,0.1429,2024
+FAR,ND,GL,Fargo Hector International,Small,552860,522976,0.0571,2024
+ATW,WI,GL,Appleton Appleton International,Small,540349,474885,0.1379,2024
+JAC,WY,NM,Jackson Jackson Hole,Small,518754,494863,0.0483,2024
+MSO,MT,NM,Missoula Missoula Montana,Small,511553,458429,0.1159,2024
+GPI,MT,NM,Kalispell Glacier Park International,Small,503816,456285,0.1042,2024
+MFR,OR,NM,Medford Rogue Valley International/Medford,Small,503733,478121,0.0536,2024
+ACY,NJ,EA,Atlantic City Atlantic City International,Non-hub,489848,437812,0.1189,2024
+PSC,WA,NM,Pasco Tri-Cities,Non-hub,476639,438076,0.088,2024
+BIL,MT,NM,Billings Billings Logan International,Non-hub,475334,428868,0.1083,2024
+TLH,FL,SO,Tallahassee Tallahassee International,Non-hub,469318,416501,0.1268,2024
+PVU,UT,NM,Provo Provo Municipal,Non-hub,455219,415197,0.0964,2024
+SBN,IN,GL,South Bend South Bend International,Non-hub,454920,411377,0.1058,2024
+ABE,PA,EA,Allentown Lehigh Valley International,Non-hub,447899,419604,0.0674,2024
+JNU,AK,AL,Juneau Juneau International,Non-hub,436457,440279,-0.0087,2024
+GPT,MS,SO,Gulfport Gulfport-Biloxi International,Non-hub,424624,376980,0.1264,2024
+FWA,IN,GL,Fort Wayne Fort Wayne International,Non-hub,424491,392876,0.0805,2024
+BTR,LA,SW,"Baton Rouge Baton Rouge Metro, Ryan Field",Non-hub,419446,377665,0.1106,2024
+RAP,SD,GL,Rapid City Rapid City Regional,Non-hub,418183,345532,0.2103,2024
+AMA,TX,SW,Amarillo Rick Husband Amarillo International,Non-hub,402315,397983,0.0109,2024
+TVC,MI,GL,Traverse City Cherry Capital,Non-hub,393108,347763,0.1304,2024
+STS,CA,WP,Santa Rosa Charles M Schulz/Sonoma County,Non-hub,382556,318197,0.2023,2024
+ROA,VA,EA,Roanoke Roanoke/Blacksburg Regional (Woodrum Field),Non-hub,382103,345561,0.1057,2024
+CAK,OH,GL,Akron Akron-Canton Regional,Non-hub,380232,344002,0.1053,2024
+BGR,ME,NE,Bangor Bangor International,Non-hub,376456,357301,0.0536,2024
+CRP,TX,SW,Corpus Christi Corpus Christi International,Non-hub,369393,352224,0.0487,2024
+SBP,CA,WP,San Luis Obispo San Luis Obispo County Regional,Non-hub,366428,324925,0.1277,2024
+BQN,PR,SO,Aguadilla Rafael Hernandez,Non-hub,360645,432822,-0.1668,2024
+SHV,LA,SW,Shreveport Shreveport Regional,Non-hub,352281,308925,0.1403,2024
+CHO,VA,EA,Charlottesville-Albemarle Airport Charlottesville-Albemarle,Non-hub,351138,308485,0.1383,2024
+ASE,CO,NM,Aspen Aspen-Pitkin County/Sardy Field,Non-hub,349781,309411,0.1305,2024
+MLB,FL,SO,Melbourne Melbourne Orlando International,Non-hub,348283,363844,-0.0428,2024
+PIA,IL,GL,Peoria General Downing - Peoria International,Non-hub,343114,315482,0.0876,2024
+GRB,WI,GL,Green Bay Green Bay/Austin Straubel International,Non-hub,338127,330492,0.0231,2024
+DAB,FL,SO,Daytona Beach Daytona Beach International,Non-hub,337763,348080,-0.0296,2024
+MLI,IL,GL,Moline Quad Cities International,Non-hub,326888,272481,0.1997,2024
+MOB,AL,SO,Mobile Mobile Regional,Non-hub,314406,275342,0.1419,2024
+MRY,CA,WP,Monterey Monterey Regional,Non-hub,305434,259778,0.1758,2024
+IDA,ID,NM,Idaho Falls Idaho Falls Regional,Non-hub,301674,270140,0.1167,2024
+AGS,GA,SO,Augusta Augusta Regional at Bush Field,Non-hub,299141,280553,0.0663,2024
+BIS,ND,GL,Bismarck Bismarck Municipal,Non-hub,295900,258780,0.1434,2024
+GNV,FL,SO,Gainesville Gainesville Regional,Non-hub,290563,273366,0.0629,2024
+FNT,MI,GL,Flint Bishop International,Non-hub,285088,281903,0.0113,2024
+EGE,CO,NM,Eagle Eagle County Regional,Non-hub,282849,226950,0.2463,2024
+PAE,WA,NM,Everett Seattle Paine Field International,Non-hub,275996,306499,-0.0995,2024
+GJT,CO,NM,Grand Junction Grand Junction Regional,Non-hub,270935,243808,0.1113,2024
+BLI,WA,NM,Bellingham Bellingham International,Non-hub,266703,311234,-0.1431,2024
+STX,VI,SO,Christiansted Henry E Rohlsen,Non-hub,265243,235392,0.1268,2024
+MTJ,CO,NM,Montrose Montrose Regional,Non-hub,264973,244266,0.0848,2024
+LFT,LA,SW,Lafayette Lafayette Regional/Paul Fournet Field,Non-hub,264471,229831,0.1507,2024
+DRO,CO,NM,Durango Durango-La Plata County,Non-hub,250640,217357,0.1531,2024
+TTN,NJ,EA,Trenton Trenton Mercer,Non-hub,241950,326300,-0.2585,2024
+GSN,MP,WP,Saipan Francisco C Ada/Saipan International,Non-hub,234042,218374,0.0717,2024
+TRI,TN,SO,Bristol/Johnson/Kingsport Tri-Cities,Non-hub,229860,220977,0.0402,2024
+HDN,CO,NM,Hayden Yampa Valley,Non-hub,226830,206236,0.0999,2024
+AVP,PA,EA,Avoca Wilkes-Barre/Scranton International,Non-hub,219572,174061,0.2615,2024
+AEX,LA,SW,Alexandria Alexandria International,Non-hub,204603,176351,0.1602,2024
+CRW,WV,EA,Charleston West Virginia International Yeager,Non-hub,202303,194898,0.038,2024
+BFL,CA,WP,Bakersfield Meadows Field,Non-hub,195148,174891,0.1158,2024
+MGM,AL,SO,Montgomery Montgomery Regional (Dannelly Field),Non-hub,193746,181927,0.065,2024
+EVV,IN,GL,Evansville Evansville Regional,Non-hub,189706,165186,0.1484,2024
+BRO,TX,SW,Brownsville Brownsville/South Padre Island International,Non-hub,188157,176056,0.0687,2024
+GTF,MT,NM,Great Falls Great Falls International,Non-hub,186778,177290,0.0535,2024
+SAF,NM,SW,Santa Fe Santa Fe Regional,Non-hub,180248,140257,0.2851,2024
+LRD,TX,SW,Laredo Laredo International,Non-hub,172726,151114,0.143,2024
+MOT,ND,GL,Minot Minot International,Non-hub,169463,146874,0.1538,2024
+FAY,NC,SO,Fayetteville Fayetteville Regional/Grannis Field,Non-hub,168117,167572,0.0033,2024
+BET,AK,AL,Bethel Bethel,Non-hub,165846,153548,0.0801,2024
+BMI,IL,GL,Bloomington-Normal Airport Central Il Regional/Bloomington Normal,Non-hub,161971,164672,-0.0164,2024
+SGU,UT,NM,St. George St George Regional,Non-hub,161201,136411,0.1817,2024
+ACK,MA,NE,Nantucket Nantucket Memorial,Non-hub,154173,137664,0.1199,2024
+BLV,IL,GL,Belleville Scott AFB/Midamerica St Louis,Non-hub,152632,147421,0.0353,2024
+KTN,AK,AL,Ketchikan Ketchikan International,Non-hub,152082,148645,0.0231,2024
+OAJ,NC,SO,Richlands Albert J Ellis,Non-hub,145901,133839,0.0901,2024
+SWF,NY,EA,Newburgh New York Stewart International,Non-hub,143310,129610,0.1057,2024
+LCK,OH,GL,Columbus Rickenbacker International,Non-hub,143035,149363,-0.0424,2024
+PSE,PR,SO,Ponce Mercedita,Non-hub,137553,142076,-0.0318,2024
+DLH,MN,GL,Duluth Duluth International,Non-hub,135966,128109,0.0613,2024
+UNV,PA,EA,State College State College Regional,Non-hub,134128,138860,-0.0341,2024
+ACV,CA,WP,Arcata California Redwood Coast Humboldt County,Non-hub,133682,117972,0.1332,2024
+RFD,IL,GL,Rockford Chicago/Rockford International,Non-hub,132154,120494,0.0968,2024
+JQF,NC,SO,Concord Concord-Padgett Regional,Non-hub,132000,119072,0.1086,2024
+LNK,NE,CE,Lincoln Lincoln,Non-hub,129968,131882,-0.0145,2024
+ILG,DE,EA,Wilmington New Castle,Non-hub,125071,133377,-0.0623,2024
+LAN,MI,GL,Clinton (Township of) Capital Region International,Non-hub,123608,115895,0.0666,2024
+SUN,ID,NM,Hailey Friedman Memorial,Non-hub,121123,109368,0.1075,2024
+GRK,TX,SW,Killeen Robert Gray AAF,Non-hub,117523,113701,0.0336,2024
+ORH,MA,NE,Worcester Worcester Regional,Non-hub,112872,104747,0.0776,2024
+MBS,MI,GL,Saginaw MBS International,Non-hub,110822,93545,0.1847,2024
+HXD,SC,SO,Hilton Head Island Hilton Head,Non-hub,108775,103964,0.0463,2024
+MLU,LA,SW,Monroe Monroe Regional,Non-hub,105274,96964,0.0857,2024
+COU,MO,CE,Columbia Columbia Regional,Non-hub,103081,97779,0.0542,2024
+HLN,MT,NM,Helena Helena Regional,Non-hub,101591,88319,0.1503,2024
+PSM,NH,NE,Portsmouth Portsmouth International at Pease,Non-hub,100298,57448,0.7459,2024
+XWA,ND,GL,Williston Williston Basin International,Non-hub,99735,82258,0.2125,2024
+CPR,WY,NM,Casper Casper/Natrona County International,Non-hub,99658,87181,0.1431,2024
+RST,MN,GL,Rochester Rochester International,Non-hub,98537,93490,0.054,2024
+SIT,AK,AL,Sitka Sitka Rocky Gutierrez,Non-hub,98066,96214,0.0192,2024
+SCC,AK,AL,Deadhorse Deadhorse,Non-hub,96967,82296,0.1783,2024
+ABI,TX,SW,Abilene Abilene Regional,Non-hub,94579,79831,0.1847,2024
+HTS,WV,EA,Huntington Tri-State/Milton J Ferguson Field,Non-hub,93330,88888,0.05,2024
+PBG,NY,EA,Plattsburgh Plattsburgh International,Non-hub,92960,72150,0.2884,2024
+AZO,MI,GL,Kalamazoo Kalamazoo/Battle Creek International,Non-hub,92510,87626,0.0557,2024
+GFK,ND,GL,Grand Forks Grand Forks International,Non-hub,92482,93877,-0.0149,2024
+LCH,LA,SW,Lake Charles Lake Charles Regional,Non-hub,90791,82425,0.1015,2024
+CWA,WI,GL,Mosinee Central Wisconsin,Non-hub,90087,84775,0.0627,2024
+RDD,CA,WP,Redding Redding Regional,Non-hub,88676,87670,0.0115,2024
+VRB,FL,SO,Vero Beach Vero Beach Regional,Non-hub,88608,42329,1.0933,2024
+EWN,NC,SO,New Bern Coastal Carolina Regional,Non-hub,86653,59159,0.4647,2024
+CMI,IL,GL,Savoy University of Illinois/Willard,Non-hub,86626,70184,0.2343,2024
+ADQ,AK,AL,Kodiak Kodiak,Non-hub,86579,85183,0.0164,2024
+MHK,KS,CE,Manhattan Manhattan Regional,Non-hub,85901,51412,0.6708,2024
+ELM,NY,EA,Elmira Elmira/Corning Regional,Non-hub,85696,85034,0.0078,2024
+NYL,AZ,WP,Yuma Yuma MCAS/Yuma International,Non-hub,85227,94364,-0.0968,2024
+MKK,HI,WP,Kaunakakai Molokai,Non-hub,84029,85341,-0.0154,2024
+MVY,MA,NE,Vineyard Haven Martha's Vineyard,Non-hub,83419,83621,-0.0024,2024
+LYH,VA,EA,Timberlake Lynchburg Regional/Preston Glenn Field,Non-hub,81477,74730,0.0903,2024
+FLG,AZ,WP,- Flagstaff Flagstaff Pulliam,Non-hub,79081,73992,0.0688,2024
+LBE,PA,EA,Latrobe Arnold Palmer Regional,Non-hub,76437,76925,-0.0063,2024
+ENA,AK,AL,Kenai Kenai Municipal,Non-hub,75395,67062,0.1243,2024
+ITH,NY,EA,Ithaca Ithaca Tompkins International,Non-hub,69613,60848,0.144,2024
+OME,AK,AL,Nome Nome,Non-hub,69593,66883,0.0405,2024
+PHF,VA,EA,Newport News Newport News/Williamsburg International,Non-hub,68787,69541,-0.0108,2024
+CLL,TX,SW,College Station Easterwood Field,Non-hub,68316,60072,0.1372,2024
+GRI,NE,CE,Grand Island Central Nebraska Regional,Non-hub,67747,65092,0.0408,2024
+TOL,OH,GL,Toledo Eugene F Kranz Toledo Express,Non-hub,66614,70346,-0.0531,2024
+PUW,WA,NM,Pullman Pullman/Moscow Regional,Non-hub,64580,63835,0.0117,2024
+SCK,CA,WP,Stockton Stockton Metro,Non-hub,63668,67688,-0.0594,2024
+CSG,GA,SO,Columbus Columbus,Non-hub,63422,65701,-0.0347,2024
+OTZ,AK,AL,Kotzebue Ralph Wien Memorial,Non-hub,60547,60124,0.007,2024
+SBY,MD,EA,Salisbury Salisbury-Ocean City Wicomico Regional,Non-hub,60442,52236,0.1571,2024
+BVU,NV,WP,Boulder City Boulder City Municipal,Non-hub,59617,49841,0.1961,2024
+FSM,AR,SW,Fort Smith Fort Smith Regional,Non-hub,59250,58615,0.0108,2024
+IAG,NY,EA,Niagara Falls Niagara Falls International,Non-hub,59119,52631,0.1233,2024
+GUC,CO,NM,Gunnison Gunnison-Crested Butte Regional,Non-hub,58804,49588,0.1859,2024
+LWS,ID,NM,Lewiston Lewiston/Nez Perce County,Non-hub,55467,36761,0.5089,2024
+ACT,TX,SW,Waco Waco Regional,Non-hub,53849,51867,0.0382,2024
+SPI,IL,GL,Springfield Abraham Lincoln Capital,Non-hub,51784,50513,0.0252,2024
+TYR,TX,SW,Tyler Tyler Pounds Regional,Non-hub,51296,50155,0.0227,2024
+SJT,TX,SW,San Angelo San Angelo Regional/Mathis Field,Non-hub,49493,51865,-0.0457,2024
+ROW,NM,SW,Roswell Roswell Air Center,Non-hub,48740,44943,0.0845,2024
+GTR,MS,SO,Columbus Golden Triangle Regional,Non-hub,47323,42509,0.1132,2024
+ERI,PA,EA,Erie Erie International/Tom Ridge Field,Non-hub,46810,47206,-0.0084,2024
+VLD,GA,SO,Valdosta Valdosta Regional,Non-hub,46744,42160,0.1087,2024
+LAW,OK,SW,Lawton Lawton-Fort Sill Regional,Non-hub,45031,45716,-0.015,2024
+PPG,AS,WP,Pago Pago Pago Pago International,Non-hub,44656,43467,0.0274,2024
+SAW,MI,GL,Gwinn Marquette/Sawyer Regional,Non-hub,44574,42660,0.0449,2024
+EAT,WA,NM,East Wenatchee Pangborn Memorial,Non-hub,44459,27655,0.6076,2024
+BRW,AK,AL,Barrow Wiley Post-Will Rogers Memorial,Non-hub,43364,41579,0.0429,2024
+BQK,GA,SO,Brunswick Brunswick Golden Isles,Non-hub,42771,33832,0.2642,2024
+PGV,NC,SO,Greenville Pitt-Greenville,Non-hub,42318,34824,0.2152,2024
+CKB,WV,EA,Clarksburg North Central West Virginia,Non-hub,42288,42736,-0.0105,2024
+HGR,MD,EA,Hagerstown Hagerstown Regional/Richard A Henson Field,Non-hub,41508,32331,0.2838,2024
+YKM,WA,NM,Yakima Yakima Air Trml/McAllister Field,Non-hub,41471,24044,0.7248,2024
+LSE,WI,GL,La Crosse La Crosse Regional,Non-hub,40608,43681,-0.0704,2024
+DHN,AL,SO,Dothan Dothan Regional,Non-hub,39339,35667,0.103,2024
+AKN,AK,AL,King Salmon King Salmon,Non-hub,39289,38021,0.0333,2024
+VQS,PR,SO,Vieques Antonio Rivera Rodriguez,Non-hub,37756,28961,0.3037,2024
+COD,WY,NM,Cody Yellowstone Regional,Non-hub,37437,34711,0.0785,2024
+ALW,WA,NM,Walla Walla Walla Walla Regional,Non-hub,36873,26465,0.3933,2024
+TXK,AR,SW,Texarkana Texarkana Regional-Webb Field,Non-hub,36307,41951,-0.1345,2024
+GGG,TX,SW,Longview East Texas Regional,Non-hub,35057,32613,0.0749,2024
+SWO,OK,SW,Stillwater Stillwater Regional,Non-hub,34729,35358,-0.0178,2024
+DLG,AK,AL,Dillingham Dillingham,Non-hub,34656,34815,-0.0046,2024
+BPT,TX,SW,Beaumont Jack Brooks Regional,Non-hub,33907,32150,0.0547,2024
+MRI,AK,AL,Anchorage Merrill Field,Non-hub,32601,32219,0.0119,2024
+TWF,ID,NM,Twin Falls Joslin Field/Magic Valley Regional,Non-hub,31734,19871,0.597,2024
+GCK,KS,CE,Garden City Garden City Regional,Non-hub,31167,27856,0.1189,2024
+PLN,MI,GL,Pellston Pellston Regional/Emmet County,Non-hub,31060,22264,0.3951,2024
+TNI,MP,WP,Tinian (Municipality) Francisco Manglona Borja/Tinian International,Non-hub,30538,26143,0.1681,2024
+GCC,WY,NM,Gillette Northeast Wyoming Regional,Non-hub,30321,26784,0.1321,2024
+ABY,GA,SO,Albany Southwest Georgia Regional,Non-hub,30295,30025,0.009,2024
+SPS,TX,SW,Wichita Falls Sheppard AFB/Wichita Falls Municipal,Non-hub,29702,25075,0.1845,2024
+SHR,WY,NM,Sheridan Sheridan County,Non-hub,29471,26641,0.1062,2024
+BFI,WA,NM,Seattle Boeing Field/King County International,Non-hub,28769,27446,0.0482,2024
+BJI,MN,GL,Bemidji Bemidji Regional,Non-hub,28536,25179,0.1333,2024
+SUX,IA,CE,Sioux City Sioux Gateway/Brig General Bud Day Field,Non-hub,28299,27111,0.0438,2024
+SLE,OR,NM,Salem McNary Field,Non-hub,28119,6993,3.021,2024
+CYS,WY,NM,Cheyenne Cheyenne Regional/Jerry Olson Field,Non-hub,27602,13132,1.1019,2024
+HOM,AK,AL,Homer Homer,Non-hub,27482,34682,-0.2076,2024
+CIU,MI,GL,Sault Ste. Marie Chippewa County International,Non-hub,26482,22166,0.1947,2024
+HOB,NM,SW,Hobbs Lea County Regional,Non-hub,26212,22187,0.1814,2024
+DIK,ND,GL,Dickinson Dickinson/Theodore Roosevelt Regional,Non-hub,26146,24123,0.0839,2024
+CMX,MI,GL,Hancock Houghton County Memorial,Non-hub,25833,23355,0.1061,2024
+HYA,MA,NE,Hyannis Cape Cod Gateway,Non-hub,25626,17472,0.4667,2024
+PRC,AZ,WP,Prescott Prescott Regional/Ernest A Love Field,Non-hub,25316,24583,0.0298,2024
+PSG,AK,AL,Petersburg Petersburg James A Johnson,Non-hub,25209,24921,0.0116,2024
+LNY,HI,WP,Lanai City Lanai,Non-hub,25186,34430,-0.2685,2024
+RHI,WI,GL,Rhinelander Rhinelander/Oneida County,Non-hub,24826,20991,0.1827,2024
+FLO,SC,SO,Florence Florence Regional,Non-hub,24728,22734,0.0877,2024
+PIH,ID,NM,Arbon Valley Pocatello Regional,Non-hub,24610,17504,0.406,2024
+BGM,NY,EA,Binghamton Greater Binghamton/Edwin A Link Field,Non-hub,24496,36647,-0.3316,2024
+LAL,FL,SO,Lakeland Lakeland Linder International,Non-hub,24185,224,106.9688,2024
+STC,MN,GL,St. Cloud St. Cloud Regional,Non-hub,23885,19556,0.2214,2024
+ABR,SD,GL,Aberdeen Aberdeen Regional,Non-hub,23705,22112,0.072,2024
+SLN,KS,CE,Salina Salina Regional,Non-hub,23456,15080,0.5554,2024
+ART,NY,EA,Watertown Watertown International,Non-hub,23188,21524,0.0773,2024
+DUT,AK,AL,Unalaska Unalaska,Non-hub,22712,19201,0.1829,2024
+PGA,AZ,WP,Page Page Municipal,Non-hub,22400,15974,0.4023,2024
+EAU,WI,GL,Eau Claire Chippewa Valley Regional,Non-hub,22289,25856,-0.138,2024
+PQI,ME,NE,Presque Isle Presque Isle International,Non-hub,21633,19269,0.1227,2024
+RIW,WY,NM,Riverton Central Wyoming Regional,Non-hub,21624,15350,0.4087,2024
+RKS,WY,NM,Rock Springs Southwest Wyoming Regional,Non-hub,21541,16158,0.3331,2024
+OTH,OR,NM,North Bend Southwest Oregon Regional,Non-hub,20495,19590,0.0462,2024
+SBD,CA,WP,San Bernardino San Bernardino International,Non-hub,20147,27349,-0.2633,2024
+RVR,PR,SO,Ceiba Jose Aponte De La Torre,Non-hub,19681,19786,-0.0053,2024
+IMT,MI,GL,Iron Mountain Ford,Non-hub,19483,17966,0.0844,2024
+LAR,WY,NM,Laramie Laramie Regional,Non-hub,19061,18094,0.0534,2024
+CDV,AK,AL,Cordova Merle K (Mudhole) Smith,Non-hub,18641,18244,0.0218,2024
+JLN,MO,CE,Joplin Joplin Regional,Non-hub,18362,14420,0.2734,2024
+JST,PA,EA,Johnstown John Murtha Johnstown/Cambria County,Non-hub,17690,14253,0.2411,2024
+CRQ,CA,WP,Carlsbad McClellan-Palomar,Non-hub,17434,4329,3.0273,2024
+ESC,MI,GL,Escanaba Delta County,Non-hub,17120,15659,0.0933,2024
+MCN,GA,SO,Macon Middle Georgia Regional,Non-hub,17020,15832,0.075,2024
+MEI,MS,SO,Meridian Key Field,Non-hub,17003,15513,0.096,2024
+SIG,PR,SO,San Juan Fernando Luis Ribas Dominicci,Non-hub,16844,13447,0.2526,2024
+LBF,NE,CE,North Platte North Platte Regional/Lee Bird Field,Non-hub,16537,14371,0.1507,2024
+BRD,MN,GL,Brainerd Brainerd Lakes Regional,Non-hub,16255,16218,0.0023,2024
+AKW,AK,AL,Klawock Klawock,Non-hub,16224,16733,-0.0304,2024
+TUP,MS,SO,Tupelo Tupelo Regional,Non-hub,16194,13526,0.1972,2024
+BTM,MT,NM,Butte Bert Mooney,Non-hub,15773,16033,-0.0162,2024
+OGD,UT,NM,Ogden Ogden-Hinckley,Non-hub,15582,215,71.4744,2024
+PIB,MS,SO,Moselle Hattiesburg/Laurel Regional,Non-hub,15575,13002,0.1979,2024
+HYS,KS,CE,Hays Hays Regional,Non-hub,15002,10038,0.4945,2024
+PIR,SD,GL,Pierre Pierre Regional,Non-hub,14887,15885,-0.0628,2024
+INL,MN,GL,International Falls Falls International/Einarson Field,Non-hub,14842,13277,0.1179,2024
+CPX,PR,SO,Culebra Benjamin Rivera Noriega,Non-hub,14663,18922,-0.2251,2024
+WRG,AK,AL,Wrangell Wrangell,Non-hub,14560,14323,0.0165,2024
+ATY,SD,GL,Watertown Watertown Regional,Non-hub,14134,15532,-0.09,2024
+EAR,NE,CE,Kearney Kearney Regional,Non-hub,14130,14684,-0.0377,2024
+VCT,TX,SW,Victoria Victoria Regional,Non-hub,14006,11293,0.2402,2024
+BFF,NE,CE,Scottsbluff Scottsbluff/Western Nebraska Regional/Wm B Heilig Field,Non-hub,13841,12052,0.1484,2024
+MWA,IL,GL,Marion Veterans Airport of Southern Illinois,Non-hub,13816,10558,0.3086,2024
+SMX,CA,WP,Santa Maria Santa Maria Public/Capt G Allan Hancock Field,Non-hub,13525,14409,-0.0614,2024
+PAH,KY,SO,Paducah Barkley Regional,Non-hub,13456,13057,0.0306,2024
+RKD,ME,NE,Rockland Knox County Regional,Non-hub,13309,7047,0.8886,2024
+FHR,WA,NM,Friday Harbor Friday Harbor,Non-hub,12898,12709,0.0149,2024
+EKO,NV,WP,Elko Elko Regional,Non-hub,12881,10723,0.2012,2024
+DEC,IL,GL,Decatur Decatur,Non-hub,12747,11216,0.1365,2024
+WST,RI,NE,Westerly Westerly State,Non-hub,12320,12328,-0.0006,2024
+ALS,CO,NM,Alamosa San Luis Valley Regional/Bergman Field,Non-hub,12232,11319,0.0807,2024
+CVN,NM,SW,Clovis Clovis Regional,Non-hub,12033,13623,-0.1167,2024
+ALO,IA,CE,Waterloo Waterloo Regional,Non-hub,12006,12885,-0.0682,2024
+YAK,AK,AL,Yakutat Yakutat,Non-hub,11923,12105,-0.015,2024
+BID,RI,NE,Block Island Block Island State,Non-hub,11867,15194,-0.219,2024
+CDC,UT,NM,Cedar City Cedar City Regional,Non-hub,11855,11768,0.0074,2024
+GAL,AK,AL,Galena Edward G Pitka Sr,Non-hub,11852,11758,0.008,2024
+HIB,MN,GL,Hibbing Range Regional,Non-hub,11294,11775,-0.0408,2024
+TBN,MO,CE,Fort Leonard Wood (U.S. Army) Waynesville-St Robert Regional Forney Field,Non-hub,11276,11853,-0.0487,2024
+APN,MI,GL,Alpena Alpena County Regional,Non-hub,11150,8034,0.3879,2024
+BHB,ME,NE,Bar Harbor Hancock County/Bar Harbor,Non-hub,11042,10478,0.0538,2024
+LEB,NH,NE,Lebanon Lebanon Municipal,Non-hub,10934,10863,0.0065,2024
+TEX,CO,NM,Telluride Telluride Regional,Non-hub,10721,10826,-0.0097,2024
+GRO,MP,WP,Northern Islands (Municipality) Benjamin Taisacan Manglona International,Non-hub,10717,11136,-0.0376,2024
+CNY,UT,NM,Moab Canyonlands Regional,Non-hub,10625,19310,-0.4498,2024
+VEL,UT,NM,Vernal Vernal Regional,Non-hub,10578,13952,-0.2418,2024
+FXE,FL,SO,Fort Lauderdale Fort Lauderdale Exec,Non-hub,10493,10625,-0.0124,2024
+BIH,CA,WP,Bishop Bishop,Non-hub,10119,10007,0.0112,2024
+GST,AK,AL,Gustavus Gustavus,Non-hub,10074,9584,0.0511,2024
+YNG,OH,GL,Youngstown Youngstown/Warren Regional,Non-hub,523,730,-0.2836,2024

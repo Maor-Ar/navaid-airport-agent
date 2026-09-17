@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}} — Navaid</title>
+  <meta name="description" content="{{description}}">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/site.css">
+  <script type="application/json" id="navaid-config">{"api":"","root":""}</script>
+  <script src="/static/js/config.js"></script>
+</head>
+<body data-page="{{page}}">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="masthead">
+    <div class="masthead__inner">
+      <a class="wordmark" href="/" aria-label="Navaid home">
+        <svg class="wordmark__mark" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <circle cx="16" cy="16" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M16 3.5v5M16 23.5v5M3.5 16h5M23.5 16h5" stroke="currentColor" stroke-width="1.4"/>
+          <circle cx="16" cy="16" r="1.7" fill="currentColor"/>
+        </svg>
+        <span class="wordmark__type">
+          <span class="wordmark__name">Navaid</span>
+          <span class="wordmark__tag">Airport investment intelligence</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a data-nav="workbench" href="/workbench">Workbench</a>
+        <a data-nav="methodology" href="/methodology">Methodology</a>
+        <a data-nav="glossary" href="/glossary">Glossary</a>
+        <a data-nav="decisions" href="/decisions">Decisions</a>
+        <a data-nav="architecture" href="/architecture">Architecture</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="main main--{{page}}">
+    {{main}}
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__kicker">Assumptions in product copy</p>
+      <ul class="assumption-list">
+        <li>US commercial primary airports; New England = CT, ME, MA, NH, RI, VT</li>
+        <li>Profit proxy is <strong>capacity unlock</strong>, not PFC/bond/NPV</li>
+        <li>T-100 is segment traffic, not true O&amp;D</li>
+        <li>Long-haul default 4000 km (Eurocontrol) on T-100 segments</li>
+        <li>Live FAA status is operations delay, not passenger demand</li>
+        <li>Missing gates/TAF/NPIAS are dropped and disclosed (drop-and-renormalize)</li>
+        <li>Gemini is the only required cloud service (API key or <code>gcloud auth login --update-adc</code>); default model gemini-2.5-flash</li>
+        <li>RAG is DuckDB FTS + airport-keyed notes — no embedding model, no Chroma</li>
+      </ul>
+      <p class="site-footer__meta">Local FastAPI. Same <code>Answer</code> contract as Gradio. Gemini may narrate a rank; it may never produce one.</p>
+    </div>
+  </footer>
+  <script type="module" src="/static/js/site.js"></script>
+  {{scripts}}
+</body>
+</html>

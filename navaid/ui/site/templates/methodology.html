@@ -1,0 +1,124 @@
+<article class="prose methodology">
+  <p class="eyebrow">Scoring methodology</p>
+  <h1>TEOI, constraints, and long-haul</h1>
+  <p class="lede">The Terminal Expansion Opportunity Index is peer-relative, 0–100. A score is “how this airport looks versus the airports you asked about,” not a national grade. Missing features are dropped and remaining weights are renormalized. Gemini may quote the trace; it may not invent a different formula.</p>
+
+  <h2 id="peer-relative">Why the score depends on the other airports</h2>
+  <p>Each input (passengers, delay, gates, and so on) is stretched from 0 to 1 <strong>inside the comparison set S</strong>. The busiest airport in that set gets 1 on demand; the quietest gets 0. Ask “New England” and BOS is the high end, so its TEOI is high (about 70). Ask “only BOS” and there is nobody to beat, so every feature becomes 0.5 and the same airport can print ~37. That is not a new formula — it is a one-airport peer set. Follow-ups such as “why does BOS have this score?” reuse the last set; they must not re-rank BOS alone.</p>
+
+  <h2 id="formula">Formula</h2>
+  <p>Peer-relative min-max inside comparison set <code>S</code>. Weights in <code>navaid/scoring/weights.py</code> sum to 1.0.</p>
+  <pre class="formula-block" aria-label="TEOI formula"><code>TEOI = 100 * (
+  0.22 * demand_pressure +
+  0.18 * congestion +
+  0.18 * landside_saturation +
+  0.15 * unmet_demand +
+  0.12 * yield_mix +
+  0.10 * growth_outlook +
+  0.05 * capital_feasibility
+) * constraint_multiplier</code></pre>
+
+  <div class="table-wrap">
+    <table>
+      <caption>Default feature weights (sum 1.0)</caption>
+      <thead>
+        <tr><th>Feature</th><th>Weight</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Demand pressure</td><td>0.22</td><td>Enplanements / YoY pressure vs peers in <code>S</code></td></tr>
+        <tr><td>Congestion</td><td>0.18</td><td>Delay / cancel / utilization vs peers</td></tr>
+        <tr><td>Landside saturation</td><td>0.18</td><td>Pax per gate (or related landside load) vs peers</td></tr>
+        <tr><td>Unmet demand</td><td>0.15</td><td>Load-factor gap + TAF gap + leakage</td></tr>
+        <tr><td>Yield mix</td><td>0.12</td><td>Long-haul / international mix as a yield proxy</td></tr>
+        <tr><td>Growth outlook</td><td>0.10</td><td>TAF / CAGR outlook vs peers</td></tr>
+        <tr><td>Capital feasibility</td><td>0.05</td><td>NPIAS/AIP feasibility; often the dropped weight</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="constraints">Constraint multipliers</h2>
+  <p>Applied after the weighted sum. This is the investment thesis in arithmetic: more terminal does not create slots.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Constraint type</th><th>Multiplier</th><th>Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge badge--landside">Landside</span></td><td>1.00</td><td>Terminal capex can unlock capacity</td></tr>
+        <tr><td><span class="badge badge--mixed">Mixed</span></td><td>0.75</td><td>Partly airside</td></tr>
+        <tr><td><span class="badge badge--airside">Airside</span></td><td>0.40</td><td>Slots / runway / curfew / ATC bind</td></tr>
+        <tr><td><span class="badge badge--demand">Demand-bound</span></td><td>0.30</td><td>Weak catchment; expansion is speculative</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="drop">Drop-and-renormalize</h2>
+  <p>If a feature is missing (for example no NPIAS for capital feasibility), that weight is removed and the remainder is rescaled to 1.0. Navaid never invents gate counts or TAF. The drop is listed on the ScoringTrace (<code>weights_dropped</code>, <code>weights_used</code>) and in the envelope.</p>
+  <p>Example: drop <code>capital_feasibility</code> (0.05). Remaining mass is 0.95. Demand pressure used weight becomes 0.22 / 0.95 ≈ 0.232. Contributions are <code>100 × weight_used × scaled_0_1</code>. Then multiply by the constraint factor.</p>
+
+  <h2 id="unmet">Unmet demand (clamped at 0)</h2>
+  <ul>
+    <li>Load-factor gap: <code>served * max(0, LF − 0.85) / 0.85</code></li>
+    <li>Forecast gap: <code>max(0, TAF_10y − implied_current_capacity)</code> if TAF exists</li>
+    <li>Leakage: same-CBSA airports growing faster while origin LF is high</li>
+  </ul>
+  <p>SFO’s spoken answer: high load factors, leakage to OAK/SJC, delay, slot/curfew. Much of the gap is airside/policy, not a missing concourse.</p>
+
+  <h2 id="longhaul">Long-haul: 4000 km</h2>
+  <p>Great-circle kilometres on T-100 <strong>segments</strong>. Default threshold <strong>4000 km</strong> (Eurocontrol). Also report international share and optional <code>pct_over_6h</code>. Pin <code>ANC→JFK</code> at ~5420 km / 3370 mi. Cargo is out unless asked. T-100 is not true O&amp;D: ANC→SEA→JFK is two segments.</p>
+
+  <h2 id="expansion-rank">Expansion rank vs <code>EXPANSION_RANK</code></h2>
+  <ul>
+    <li><code>EXPANSION_RANK</code> is the <strong>intent</strong>: run the ranker for a named peer set and return TEOI traces.</li>
+    <li><strong>Expansion rank</strong> is the <strong>ordinal</strong> (1, 2, 3…) after TEOI and constraint multipliers. Rank 1 is the strongest terminal-expansion candidate <em>in that set</em>, not a national ranking and not FAA large/medium/small hub.</li>
+    <li>“Why is #2 above #3?” is <code>EXPLAIN_TEOI</code> on the last traces. It must not re-rank a single airport.</li>
+  </ul>
+
+  <h2 id="ranker">Ranker and congestion</h2>
+  <p>Shared ranks (3, 3, 5); leftover ties by ICAO ascending. Deterministic.</p>
+  <p>Congestion compare has no fake single score. Payload: <code>delay_pct</code>, <code>avg_arrival_delay_min</code>, <code>cancel_pct</code>, <code>ops_per_runway</code>, <code>live_faa_status</code>, <code>constraint_type</code>, <code>winner_on_each_axis</code>.</p>
+
+  <h2 id="worked">Worked waterfall (illustrative BDL)</h2>
+  <p>Shape from the architecture contract. Live ranks come from the warehouse via the workbench, not from this example.</p>
+  <figure class="waterfall waterfall--static">
+    <figcaption>BDL · rank 2 · peer set BOS, BDL, PVD, PWM, MHT, BTV · landside ×1.00</figcaption>
+    <p class="formula">TEOI = 100 * (0.232*demand_pressure + …) * 1.00</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Scaled 0–1</th><th>Weight used</th><th>Contribution</th><th aria-hidden="true"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Demand pressure</td><td>0.41</td><td>0.232</td><td>9.5</td>
+            <td><span class="bar" style="--w: 91%"><span class="visually-hidden">9.5</span></span></td>
+          </tr>
+          <tr>
+            <td>Congestion</td><td>0.55</td><td>0.189</td><td>10.4</td>
+            <td><span class="bar" style="--w: 100%"><span class="visually-hidden">10.4</span></span></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><th colspan="3">Weighted sum</th><td>61.2</td><td></td></tr>
+          <tr><th colspan="3">× landside 1.00</th><td>61.2</td><td></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="section-note">Dropped: capital_feasibility (missing NPIAS). Remaining weights renormalized.</p>
+  </figure>
+
+  <h2 id="steps">What <code>steps</code> means (New England rank)</h2>
+  <ol>
+    <li>Reconstruct: n/a (first turn)</li>
+    <li>Decompose: one subgoal <code>EXPANSION_RANK</code> region=New England</li>
+    <li>Resolve airports: BOS, BDL, PVD, PWM, MHT, BTV, …</li>
+    <li>Pull warehouse metrics <code>as_of=…</code></li>
+    <li>Compute unmet, yield mix, congestion per airport</li>
+    <li>Min-max each feature inside <code>S</code></li>
+    <li>Drop missing weights; renormalize</li>
+    <li>Apply constraint multipliers</li>
+    <li>Stable rank</li>
+    <li>Number lock</li>
+    <li>Narrate from traces</li>
+  </ol>
+</article>

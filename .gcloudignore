@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+.env
+site-dist
+data/warehouse
+data/cache
+eval/runs
+gcp-sa*.json
+.pytest_cache

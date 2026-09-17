@@ -1,0 +1,15 @@
+iata,icao,development_need,as_of
+BOS,KBOS,Large hub; significant NPIAS 2025-2029 development (terminal and airside),2024-10-28
+BDL,KBDL,Medium hub; terminal/landside development need,2024-10-28
+PVD,KPVD,Small hub; landside development need,2024-10-28
+PWM,KPWM,Small hub; landside development need,2024-10-28
+MHT,KMHT,Small hub; modest development need,2024-10-28
+BTV,KBTV,Small hub; modest development need,2024-10-28
+BGR,KBGR,Nonhub primary; limited development need,2024-10-28
+ORH,KORH,Nonhub primary; limited development need,2024-10-28
+LAX,KLAX,Large hub; high NPIAS development estimate,2024-10-28
+SNA,KSNA,Medium hub; constrained airside; limited expansion in NPIAS,2024-10-28
+SFO,KSFO,Large hub; high development estimate (airside/terminal),2024-10-28
+OAK,KOAK,Medium hub; landside development need,2024-10-28
+SJC,KSJC,Medium hub; landside development need,2024-10-28
+ANC,PANC,Medium hub; mixed airside/terminal development need,2024-10-28

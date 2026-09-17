@@ -1,0 +1,783 @@
+{
+  "created_at": "2026-09-17T15:25:22.006440+00:00",
+  "use_gemini": false,
+  "gold_path": "C:\\Users\\maora\\OneDrive\\\u05de\u05e1\u05de\u05db\u05d9\u05dd\\GitHub\\Deloitte Assignment\\eval\\gold\\questions.jsonl",
+  "item_count": 42,
+  "kpis": {
+    "subgoal_coverage": 0.0,
+    "intent_accuracy": 0.0,
+    "entity_f1": null,
+    "kendall_tau": null,
+    "numeric_hit_rate": null,
+    "hallucination_rate": null,
+    "envelope_completeness": null,
+    "must_say": null,
+    "must_not_say": null,
+    "reconstruction_match": null,
+    "pass_rate": 0.0,
+    "n_items": 42,
+    "n_pass": 0,
+    "n_fail": 42,
+    "mean_latency_ms": 0.354930952068701
+  },
+  "items": [
+    {
+      "id": "assign_ne_expansion",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 1.216000000567874,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "assign_lax_sna_congestion",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.436700000136625,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "assign_anc_longhaul",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.38919999860809185,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "assign_sfo_unmet",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3633999986050185,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "compound_ne_lax_buy_aal",
+      "family": "compound",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3403000009711832,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "compound_ne_sfo",
+      "family": "compound",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.36899999759043567,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "compound_three_intents",
+      "family": "compound",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3832000002148561,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "compound_sfo_oak_sjc",
+      "family": "compound",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3629000020737294,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "fu_those_two",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3493999975034967,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "fu_why_rank_2",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.320400002237875,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "fu_add_pwm",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3508000008878298,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "fu_anc_cargo",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.5784999993920792,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "fu_independent_sfo",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.34470000173314475,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_buy_aal",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3772999989450909,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_restaurant_lax",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3171999996993691,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_empty_icao",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2886000002035871,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_santa_ana_vs_san_antonio",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2787000012176577,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_la_is_lax",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3035000008821953,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "adv_pwm_not_pdx",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.28000000020256266,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "env_missing_gates_sat",
+      "family": "envelope",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2691000008780975,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "env_live_congestion",
+      "family": "envelope",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.26979999893228523,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "env_sfo_airside",
+      "family": "envelope",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.25439999808440916,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "rank_ne_full",
+      "family": "ranking",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.25099999766098335,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "rank_bdl_pvd_pwm",
+      "family": "ranking",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.24479999774484895,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "rank_landside_regionals",
+      "family": "ranking",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2812999991874676,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "rank_bos_bdl",
+      "family": "ranking",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.287499999103602,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "numeric_longhaul_bos",
+      "family": "numeric",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2944999978353735,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "numeric_unmet_oak",
+      "family": "numeric",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.29600000198115595,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "numeric_unmet_lax",
+      "family": "numeric",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.28670000028796494,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "congestion_sfo_oak",
+      "family": "numeric",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.26079999952344224,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "brief_bdl",
+      "family": "brief",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.26060000163852237,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "brief_sna",
+      "family": "brief",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2549999990151264,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "brief_anc",
+      "family": "brief",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2537000000302214,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "brief_sfo",
+      "family": "brief",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2409999979136046,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "assign_ne_wording_alt",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2634999982547015,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "congestion_lax_sna_codes",
+      "family": "assignment",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.2877000006265007,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "unsupported_stock",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.3062999967369251,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "unsupported_restaurant_only",
+      "family": "adversarial",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.27879999834112823,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "longhaul_anc_units",
+      "family": "numeric",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.6892000019433908,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "explain_teoi_dialog",
+      "family": "followup",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.45569999929284677,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "congestion_sna_constraint",
+      "family": "envelope",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.4566999996313825,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    },
+    {
+      "id": "ne_includes_core_five",
+      "family": "ranking",
+      "pass": false,
+      "failures": [
+        "ask failed: Connection Error: Can't open a connection to same database file with a different configuration than existing connections"
+      ],
+      "scores": {
+        "subgoal_coverage": 0.0,
+        "intent_accuracy": 0.0
+      },
+      "latency_ms": 0.5132000005687587,
+      "reconstructed_query": "",
+      "intents": [],
+      "entities": [],
+      "ranking": []
+    }
+  ],
+  "failed_ids": [
+    "assign_ne_expansion",
+    "assign_lax_sna_congestion",
+    "assign_anc_longhaul",
+    "assign_sfo_unmet",
+    "compound_ne_lax_buy_aal",
+    "compound_ne_sfo",
+    "compound_three_intents",
+    "compound_sfo_oak_sjc",
+    "fu_those_two",
+    "fu_why_rank_2",
+    "fu_add_pwm",
+    "fu_anc_cargo",
+    "fu_independent_sfo",
+    "adv_buy_aal",
+    "adv_restaurant_lax",
+    "adv_empty_icao",
+    "adv_santa_ana_vs_san_antonio",
+    "adv_la_is_lax",
+    "adv_pwm_not_pdx",
+    "env_missing_gates_sat",
+    "env_live_congestion",
+    "env_sfo_airside",
+    "rank_ne_full",
+    "rank_bdl_pvd_pwm",
+    "rank_landside_regionals",
+    "rank_bos_bdl",
+    "numeric_longhaul_bos",
+    "numeric_unmet_oak",
+    "numeric_unmet_lax",
+    "congestion_sfo_oak",
+    "brief_bdl",
+    "brief_sna",
+    "brief_anc",
+    "brief_sfo",
+    "assign_ne_wording_alt",
+    "congestion_lax_sna_codes",
+    "unsupported_stock",
+    "unsupported_restaurant_only",
+    "longhaul_anc_units",
+    "explain_teoi_dialog",
+    "congestion_sna_constraint",
+    "ne_includes_core_five"
+  ]
+}
