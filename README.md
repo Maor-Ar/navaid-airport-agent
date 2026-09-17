@@ -16,7 +16,7 @@ Python **3.12**. One local database. The only required cloud call is Google Gemi
 
 The designed analyst site serves the same three docs at `/architecture`, `/glossary`, and `/decisions`.
 
-**Deploy:** GitHub Pages (frontend) + Cloud Run (API). One-time setup is in [docs/DEPLOY.md](docs/DEPLOY.md). Push to `main` after adding `GCP_PROJECT_ID` and `GCP_SA_KEY`.
+**Deploy:** GitHub Pages (frontend) + Cloud Run (API). One command: `.\scripts\go_live.ps1 -GcpProject YOUR_VERTEX_PROJECT` — details in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Local run
 
@@ -177,7 +177,7 @@ Gemini’s prose may quote those fields. A **number lock** rejects digits that w
 - `navaid/warehouse/` — one DuckDB file (metrics, sessions, FTS `doc_chunks`; no embeddings table)
 - `scripts/build_snapshot.py` — ingest into DuckDB
 - `scripts/export_site.py` — static GitHub Pages export
-- `scripts/bootstrap_gcp.ps1` — one-time Cloud Run / Artifact Registry / IAM
+- `scripts/go_live.ps1` — create GitHub repo, GCP IAM, secrets, push
 - `.github/workflows/deploy.yml` — pytest, Cloud Run, GitHub Pages
 - `eval/gold/` + `eval/run_eval.py` — gold set and KPI runner
 - `tests/` — pytest

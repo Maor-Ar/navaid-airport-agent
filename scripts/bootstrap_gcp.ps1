@@ -1,21 +1,21 @@
-"""One-time GCP setup for Cloud Run + GitHub Actions.
+<#
+.SYNOPSIS
+One-time GCP setup for Cloud Run + GitHub Actions.
 
-Run from the repo root in PowerShell (you already have gcloud):
-
-    .\scripts\bootstrap_gcp.ps1
-
-It enables APIs, creates Artifact Registry, a GitHub deploy service account,
-and writes gcp-sa-navaid.json (gitignored). Then:
-
-    gh secret set GCP_PROJECT_ID -b "<project>"
-    gh secret set GCP_SA_KEY < gcp-sa-navaid.json
-"""
+.EXAMPLE
+.\scripts\bootstrap_gcp.ps1 -Project dgt-gcp-moe-gemini-test
+#>
+param(
+    [string]$Project = ""
+)
 
 $ErrorActionPreference = "Stop"
 
-$Project = gcloud config get-value project 2>$null
+if (-not $Project) {
+    $Project = (gcloud config get-value project 2>$null).Trim()
+}
 if (-not $Project -or $Project -eq "(unset)") {
-    Write-Error "No GCP project. Run: gcloud config set project YOUR_PROJECT"
+    Write-Error "Pass -Project YOUR_GCP_PROJECT (the project with Vertex AI / Gemini)."
 }
 
 $Region = "us-central1"
@@ -80,13 +80,6 @@ if (Test-Path $KeyPath) {
 }
 
 Write-Host ""
-Write-Host "Done. Add these GitHub Actions secrets (Settings → Secrets and variables → Actions):"
+Write-Host "GCP is ready. GitHub secrets:"
 Write-Host "  GCP_PROJECT_ID = $Project"
-Write-Host "  GCP_SA_KEY     = contents of $KeyPath"
-Write-Host ""
-Write-Host "If gh is logged in, this script can set them:"
-Write-Host "  gh secret set GCP_PROJECT_ID -b `"$Project`""
-Write-Host "  gh secret set GCP_SA_KEY < gcp-sa-navaid.json"
-Write-Host ""
-Write-Host "Optional: gh secret set GEMINI_API_KEY  (only if you are not using Vertex on Cloud Run)"
-Write-Host "Push to main after that. Actions deploys Cloud Run then GitHub Pages."
+Write-Host "  GCP_SA_KEY     = $KeyPath"
