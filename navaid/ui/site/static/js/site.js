@@ -6,6 +6,15 @@ document.querySelectorAll("[data-nav]").forEach((link) => {
   }
 });
 
+const navToggle = document.getElementById("nav-toggle");
+const siteNav = document.getElementById("site-nav");
+if (navToggle && siteNav) {
+  navToggle.addEventListener("click", () => {
+    const open = document.body.classList.toggle("nav-open");
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+}
+
 async function enhanceMermaid() {
   const nodes = document.querySelectorAll("pre.mermaid");
   if (!nodes.length) return;

@@ -1,13 +1,14 @@
+<link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
 <section class="workbench">
   <header class="workbench__head">
     <div>
       <h1>Analyst workbench</h1>
-      <p class="lede lede--tight">Chat against <code>POST /ask</code>. Follow-ups keep the session. The envelope stays visible. TEOI waterfalls render from engine traces, not from model prose.</p>
+      <p class="lede lede--tight">Ask ranking, congestion, unmet, or long-haul questions. Follow-ups keep the session. Gemini narration is always on, with a template fallback. TEOI waterfalls live inside Process, from engine traces — not model prose.</p>
     </div>
     <dl class="status-pills" id="status-pills">
       <div><dt>Session</dt><dd id="session-id">—</dd></div>
       <div><dt>Warehouse</dt><dd id="status-warehouse">…</dd></div>
-      <div><dt>Gemini</dt><dd id="status-gemini">…</dd></div>
+      <div><dt>Narration</dt><dd id="status-gemini">on</dd></div>
       <div><dt>Voice</dt><dd id="status-voice">off</dd></div>
     </dl>
   </header>
@@ -20,13 +21,7 @@
       <button type="button" class="chip" data-prompt="What is the unmet flight demand in SFO airport and why?">SFO unmet</button>
     </div>
     <div class="toolbar-controls">
-      <button type="button" class="switch" id="gemini-switch" role="switch" aria-checked="false" aria-label="Gemini narration">
-        <span class="switch__track" aria-hidden="true"></span>
-        <span class="switch__copy">
-          <span class="switch__title">Gemini narration</span>
-          <span class="switch__state" id="gemini-switch-state">Off</span>
-        </span>
-      </button>
+      <button type="button" class="btn btn--ghost btn--small" id="assumptions-btn">Assumptions</button>
       <button type="button" class="switch" id="speak-switch" role="switch" aria-checked="false" aria-label="Speak answers">
         <span class="switch__track" aria-hidden="true"></span>
         <span class="switch__copy">
@@ -38,7 +33,7 @@
     </div>
   </div>
 
-  <div class="workbench__grid">
+  <div class="workbench__grid" id="workbench-grid">
     <div class="workbench__chat">
       <ol class="transcript" id="transcript" aria-live="polite" aria-label="Conversation"></ol>
       <p class="transcript-empty" id="transcript-empty">Ask a ranking, compare, unmet, or long-haul question. Follow-ups such as “those two,” “why is #2 above #3?,” or “why does BOS have this score?” reuse this session’s peer set — they do not re-rank one airport alone.</p>
@@ -46,7 +41,7 @@
         <label class="visually-hidden" for="question">Question</label>
         <textarea id="question" name="question" rows="3" required placeholder="Which airports in New England are strong candidates for terminal expansion?"></textarea>
         <div class="composer__row">
-          <p class="composer__hint" id="composer-hint">Shift+Enter sends. Gemini narration starts from health or the last toggle.</p>
+          <p class="composer__hint" id="composer-hint">Enter sends. Shift+Enter adds a line. Narration is always on; engines still own the numbers.</p>
           <button type="submit" class="btn btn--solid" id="ask-submit">
             <span class="btn__wait" aria-hidden="true">
               <span class="spinner"><span></span><span></span><span></span></span>
@@ -61,27 +56,39 @@
       <audio id="narration-player" hidden></audio>
     </div>
 
-    <aside class="envelope" id="envelope" aria-labelledby="envelope-heading">
-      <h2 id="envelope-heading">Envelope</h2>
-      <p class="envelope__lede">Assumptions, uncertainty, and scope on every answer. Stale snapshot (&gt;90 days) is always listed.</p>
-      <dl class="envelope__meta">
-        <div><dt>as_of</dt><dd id="env-as-of">awaiting query</dd></div>
-        <div><dt>confidence</dt><dd id="env-confidence">—</dd></div>
-      </dl>
-      <div id="envelope-body">
-        <h3>Assumptions</h3>
-        <ul id="env-assumptions" class="plain-list">
-          <li>US commercial primary airports; New England = CT, ME, MA, NH, RI, VT</li>
-          <li>Profit proxy is capacity unlock, not PFC/bond/NPV</li>
-          <li>T-100 is segment traffic, not true O&amp;D</li>
-        </ul>
-        <h3>Uncertainties</h3>
-        <ul id="env-uncertainties" class="plain-list"><li>No engine run yet.</li></ul>
-        <h3>Out of scope</h3>
-        <ul id="env-oos" class="plain-list"><li>PFC / NPV / airline equity</li></ul>
-        <h3>Sources</h3>
-        <ul id="env-sources" class="plain-list"><li>DuckDB warehouse (after first ask)</li></ul>
-      </div>
+    <aside class="map-sidebar" id="map-sidebar" hidden aria-labelledby="map-heading">
+      <h2 id="map-heading">Map</h2>
+      <p class="map-sidebar__lede" id="map-empty" hidden>Airport locations from this answer.</p>
+      <div id="map" class="map-canvas" role="img" aria-label="Airport map"></div>
+      <div id="map-card" class="map-card" hidden></div>
     </aside>
   </div>
 </section>
+
+<dialog class="envelope-modal" id="envelope-modal" aria-labelledby="envelope-heading">
+  <div class="envelope" id="envelope">
+    <div class="envelope__head">
+      <h2 id="envelope-heading">Envelope</h2>
+      <form method="dialog"><button type="submit" class="btn btn--ghost btn--small">Close</button></form>
+    </div>
+    <p class="envelope__lede">Assumptions, uncertainty, and scope on every answer. A snapshot older than 90 days is always listed.</p>
+    <dl class="envelope__meta">
+      <div><dt>as_of</dt><dd id="env-as-of">awaiting query</dd></div>
+      <div><dt>confidence</dt><dd id="env-confidence">—</dd></div>
+    </dl>
+    <div id="envelope-body">
+      <h3>Assumptions</h3>
+      <ul id="env-assumptions" class="plain-list">
+        <li>US commercial primary airports; New England = CT, ME, MA, NH, RI, VT</li>
+        <li>Profit proxy is capacity unlock, not PFC/bond/NPV</li>
+        <li>T-100 is segment traffic, not true O&amp;D</li>
+      </ul>
+      <h3>Uncertainties</h3>
+      <ul id="env-uncertainties" class="plain-list"><li>No engine run yet.</li></ul>
+      <h3>Out of scope</h3>
+      <ul id="env-oos" class="plain-list"><li>PFC / NPV / airline equity</li></ul>
+      <h3>Sources</h3>
+      <ul id="env-sources" class="plain-list"><li>DuckDB warehouse (after first ask)</li></ul>
+    </div>
+  </div>
+</dialog>

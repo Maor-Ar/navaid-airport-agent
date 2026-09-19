@@ -11,22 +11,22 @@
 
 <section class="thesis" aria-labelledby="thesis-heading">
   <h2 id="thesis-heading">Investment thesis</h2>
-  <p>The assignment is not “which airport is busiest.” It is where modernization is most likely to be profitable because renovations <strong>unlock unused capacity</strong>. Busy can already be maxed on slots, curfew, or a weak catchment.</p>
+  <p>The question is not “which airport is busiest.” It is where modernization is most likely to be profitable because renovations <strong>unlock unused capacity</strong>. Busy can already be maxed on slots, curfew, or a weak catchment.</p>
   <ul class="constraint-grid">
     <li class="constraint-card constraint-card--landside">
       <p class="badge badge--landside">Landside ×1.00</p>
       <h3>Landside-bound</h3>
       <p>Gates, holdrooms, security, bag claim, curb. Terminal capex can raise throughput. High TEOI.</p>
     </li>
-    <li class="constraint-card constraint-card--airside">
-      <p class="badge badge--airside">Airside ×0.40</p>
-      <h3>Airside-bound</h3>
-      <p>Runways, slots, weather, ATC, noise curfew. More terminal does not create slots. Score penalized; the answer must say so.</p>
-    </li>
     <li class="constraint-card constraint-card--mixed">
       <p class="badge badge--mixed">Mixed ×0.75</p>
       <h3>Mixed</h3>
       <p>Part building, part airfield or policy. Terminal helps, but not the whole bind.</p>
+    </li>
+    <li class="constraint-card constraint-card--airside">
+      <p class="badge badge--airside">Airside ×0.40</p>
+      <h3>Airside-bound</h3>
+      <p>Runways, slots, weather, ATC, noise curfew. More terminal does not create slots. Score penalized; the answer must say so.</p>
     </li>
     <li class="constraint-card constraint-card--demand">
       <p class="badge badge--demand">Demand-bound ×0.30</p>
@@ -41,53 +41,53 @@
   <p>A 70 in New England is “high versus these airports.” It is not a score against every US hub. Change the group and the same airport’s TEOI changes.</p>
   <ul class="compare-teoi__grid">
     <li>
-      <p class="eyebrow">1 · Peer set S</p>
+      <p class="eyebrow">1 · Peer set</p>
       <h3>Who you asked about</h3>
       <p>New England, or the airports named in the question. Min-max, TEOI, and rank exist only inside this group.</p>
     </li>
     <li>
       <p class="eyebrow">2 · Min-max</p>
-      <h3>Highest in S = 1, lowest = 0</h3>
+      <h3>Highest in the set = 1, lowest = 0</h3>
       <p>Ask only BOS and every feature becomes 0.5, so mixed × 0.75 prints ~37. Same airport, different set, different score.</p>
     </li>
     <li>
       <p class="eyebrow">3 · Expansion rank</p>
       <h3>Ordinal after the formula</h3>
-      <p><code>EXPANSION_RANK</code> is the intent. Expansion rank is 1, 2, 3… after constraint multipliers — not FAA hub size.</p>
+      <p>Rank 1, 2, 3… after constraint multipliers — not FAA hub size, and not a national league table.</p>
     </li>
   </ul>
 </section>
 
 <section class="canonical" aria-labelledby="brief-heading">
-  <h2 id="brief-heading">Questions the brief requires</h2>
+  <h2 id="brief-heading">Start with these questions</h2>
   <ol class="prompt-list">
     <li>
       <a href="/workbench?q=Which%20airports%20in%20New%20England%20are%20strong%20candidates%20for%20terminal%20expansion%3F&amp;autosubmit=1">
-        <span class="prompt-list__code">EXPANSION_RANK</span>
+        <span class="prompt-list__code">Expansion</span>
         Which airports in New England are strong candidates for terminal expansion?
       </a>
       <p>BOS is scale. BDL, PVD, PWM, MHT can win as landside-constrained regionals. Peer-relative, not “biggest wins.” PWM is Portland Maine, not PDX.</p>
     </li>
     <li>
       <a href="/compare">
-        <span class="prompt-list__code">CONGESTION_COMPARE</span>
+        <span class="prompt-list__code">Congestion</span>
         Compare LA and Santa Ana airport congestion levels.
       </a>
       <p>LAX wins absolute delay volume; SNA is high-utilization and curfew-capped. No fake single congestion score. “LA” → LAX; “Santa Ana” → SNA, not SAT.</p>
     </li>
     <li>
       <a href="/workbench?q=What%20is%20the%20percentage%20of%20long%20haul%20flights%20out%20of%20Anchorage%20airport%3F&amp;autosubmit=1">
-        <span class="prompt-list__code">LONGHAUL_SHARE</span>
+        <span class="prompt-list__code">Long-haul</span>
         What is the percentage of long haul flights out of Anchorage airport?
       </a>
-      <p>Default Eurocontrol &gt;4000 km on T-100 <em>segments</em>. Also &gt;6h and international share. Cargo out unless asked. ANC→JFK is ~5420 km.</p>
+      <p>Default Eurocontrol &gt;4000 km on T-100 <em>segments</em>. The answer reports both flight-segment share and passenger share. Cargo out unless asked. ANC→JFK is ~5420 km. Warehouse totals are a sample, not every itinerary.</p>
     </li>
     <li>
       <a href="/workbench?q=What%20is%20the%20unmet%20flight%20demand%20in%20SFO%20airport%20and%20why%3F&amp;autosubmit=1">
-        <span class="prompt-list__code">UNMET_DEMAND</span>
+        <span class="prompt-list__code">Unmet</span>
         What is the unmet flight demand in SFO airport and why?
       </a>
-      <p>High load factors, leakage to OAK/SJC, delay, slot/curfew. Much of the gap is airside/policy, not a missing concourse. Unmet is max(0, implied − served).</p>
+      <p>Unmet is max(0, implied − served): load-factor gap, 10-year TAF gap, and same-metro leakage only when load factor is at or above 85%. If seats are not tight, leakage is qualitative (OAK/SJC) and not in the number. Slot/curfew still matter even when the passenger gap is a forecast, not a missing concourse.</p>
     </li>
   </ol>
 </section>
@@ -96,10 +96,10 @@
   <h2 id="pipeline-heading">How an answer is produced</h2>
   <ol class="pipeline__steps">
     <li><strong>Reconstruct</strong> follow-ups into a standalone question from session memory.</li>
-    <li><strong>Decompose</strong> compound questions so every subgoal is answered.</li>
+    <li><strong>Decompose</strong> compound questions so every part is answered.</li>
     <li><strong>Engines</strong> compute TEOI, unmet, long-haul, congestion — same input, same output.</li>
     <li><strong>Number lock</strong> rejects any digit that was not in a tool payload.</li>
     <li><strong>Narrate</strong> from traces. Gemini never ranks.</li>
   </ol>
-  <p>Every ranking answer includes the full TEOI waterfall. The workbench keeps <code>steps</code>, rankings, traces, engine tables, citations, and <code>unsupported_parts</code> on that answer card as collapsed details. The envelope stays in the sidebar. Same JSON as <code>POST /ask</code>.</p>
+  <p>Every ranking answer includes the full TEOI waterfall. Rankings, traces, engine tables, and citations sit on that answer as collapsed details. The envelope stays in the sidebar.</p>
 </section>

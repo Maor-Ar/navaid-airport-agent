@@ -40,7 +40,7 @@ class SpeakRequest(BaseModel):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Navaid", version="0.1.0")
+    app = FastAPI(title="Navaid", version="0.1.0", docs_url=None, redoc_url=None)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=cors_allow_origins(),
@@ -97,7 +97,18 @@ def create_app() -> FastAPI:
         headers = {"X-TTS-Note": note, "Cache-Control": "no-store"}
         return Response(content=data, media_type="audio/wav", headers=headers)
 
-    from navaid.api.site import mount_site
+    from navaid.api.site import mount_site, not_found_page
+    from starlette.exceptions import HTTPException as StarletteHTTPException
+    from starlette.requests import Request
+
+    @app.exception_handler(StarletteHTTPException)
+    async def handle_http_exception(request: Request, exc: StarletteHTTPException):
+        if exc.status_code != 404:
+            return JSONResponse(status_code=exc.status_code, content={"error": str(exc.detail)})
+        accept = request.headers.get("accept", "")
+        if "application/json" in accept and "text/html" not in accept:
+            return JSONResponse(status_code=404, content={"error": "Not found"})
+        return not_found_page()
 
     mount_site(app)
     return app

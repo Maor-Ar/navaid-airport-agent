@@ -94,7 +94,7 @@ def render_markdown(src: str) -> tuple[str, list[tuple[int, str, str]]]:
                 i += 1
             code = escape("\n".join(buf))
             if lang.lower() == "mermaid":
-                html.append(f'<pre class="mermaid">{code}</pre>')
+                html.append(f'<div class="mermaid-wrap"><pre class="mermaid">{code}</pre></div>')
             else:
                 cls = f' class="language-{escape(lang, quote=True)}"' if lang else ""
                 html.append(f"<pre><code{cls}>{code}</code></pre>")

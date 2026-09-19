@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{title}} — Navaid</title>
+  <title>{{title}}</title>
   <meta name="description" content="{{description}}">
   <meta name="color-scheme" content="light">
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
@@ -30,7 +30,10 @@
           <span class="wordmark__tag">Airport investment intelligence</span>
         </span>
       </a>
-      <nav class="nav" aria-label="Primary">
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav class="nav" id="site-nav" aria-label="Primary">
         <a data-nav="workbench" href="/workbench">Workbench</a>
         <a data-nav="methodology" href="/methodology">Methodology</a>
         <a data-nav="glossary" href="/glossary">Glossary</a>
@@ -44,18 +47,16 @@
   </main>
   <footer class="site-footer">
     <div class="site-footer__inner">
-      <p class="site-footer__kicker">Assumptions in product copy</p>
+      <p class="site-footer__kicker">Assumptions that always apply</p>
       <ul class="assumption-list">
         <li>US commercial primary airports; New England = CT, ME, MA, NH, RI, VT</li>
-        <li>Profit proxy is <strong>capacity unlock</strong>, not PFC/bond/NPV</li>
-        <li>T-100 is segment traffic, not true O&amp;D</li>
+        <li>Profit proxy is <strong>capacity unlock</strong>, not passenger facility charge, bond, or NPV</li>
+        <li>T-100 is segment traffic, not true origin-and-destination itineraries</li>
         <li>Long-haul default 4000 km (Eurocontrol) on T-100 segments</li>
         <li>Live FAA status is operations delay, not passenger demand</li>
-        <li>Missing gates/TAF/NPIAS are dropped and disclosed (drop-and-renormalize)</li>
-        <li>Gemini is the only required cloud service (API key or <code>gcloud auth login --update-adc</code>); default model gemini-2.5-flash</li>
-        <li>RAG is DuckDB FTS + airport-keyed notes — no embedding model, no Chroma</li>
+        <li>Missing gates, TAF, or NPIAS weights are dropped and disclosed</li>
       </ul>
-      <p class="site-footer__meta">Local FastAPI. Same <code>Answer</code> contract as Gradio. Gemini may narrate a rank; it may never produce one.</p>
+      <p class="site-footer__meta">Gemini may narrate a rank; it may never produce one. Engines lock every number.</p>
     </div>
   </footer>
   <script type="module" src="/static/js/site.js"></script>

@@ -1,3 +1,4 @@
+import { decorateIata } from "./flags.js";
 import { renderMarkdown } from "./markdown.js";
 
 const FEATURE_LABELS = {
@@ -17,6 +18,28 @@ const CONSTRAINT_MULT = {
   "demand-bound": "0.30",
 };
 
+const CONSTRAINT_ORDER = ["landside", "mixed", "airside", "demand-bound"];
+
+const CONSTRAINT_WHY = {
+  landside:
+    "Landside is the building: gates, holdrooms, security, bag claim, curb. TEOI is scaled by 1.00 because terminal capex can unlock capacity.",
+  mixed:
+    "Mixed means landside and airside both bind. TEOI is scaled by 0.75 because a terminal project only partially unlocks capacity.",
+  airside:
+    "Airside is runways, slots, weather, ATC, or a noise curfew. TEOI is scaled by 0.40 because more terminal does not create slots.",
+  "demand-bound":
+    "Demand-bound is a weak catchment, low load factor, or leakage already served nearby. TEOI is scaled by 0.30 because expansion is speculative.",
+};
+
+const CONSTRAINT_COLOR = {
+  landside: "#1f4e79",
+  mixed: "#c4a35a",
+  airside: "#8c2f39",
+  "demand-bound": "#6b7280",
+};
+
+const PROCESS_PLAY_MS = 240;
+
 const els = {
   form: document.getElementById("ask-form"),
   question: document.getElementById("question"),
@@ -24,8 +47,6 @@ const els = {
   error: document.getElementById("form-error"),
   transcript: document.getElementById("transcript"),
   empty: document.getElementById("transcript-empty"),
-  gemini: document.getElementById("gemini-switch"),
-  geminiState: document.getElementById("gemini-switch-state"),
   newSession: document.getElementById("new-session"),
   sessionId: document.getElementById("session-id"),
   warehouse: document.getElementById("status-warehouse"),
@@ -36,6 +57,8 @@ const els = {
   player: document.getElementById("narration-player"),
   hint: document.getElementById("composer-hint"),
   envelope: document.getElementById("envelope"),
+  envelopeModal: document.getElementById("envelope-modal"),
+  assumptionsBtn: document.getElementById("assumptions-btn"),
   asOf: document.getElementById("env-as-of"),
   confidence: document.getElementById("env-confidence"),
   assumptions: document.getElementById("env-assumptions"),
@@ -43,6 +66,11 @@ const els = {
   oos: document.getElementById("env-oos"),
   sources: document.getElementById("env-sources"),
   live: document.getElementById("ask-live"),
+  map: document.getElementById("map"),
+  mapEmpty: document.getElementById("map-empty"),
+  mapCard: document.getElementById("map-card"),
+  mapSidebar: document.getElementById("map-sidebar"),
+  workbenchGrid: document.getElementById("workbench-grid"),
 };
 
 function el(tag, attrs = {}, ...children) {
@@ -91,13 +119,6 @@ function setSessionId(id) {
   els.sessionId.title = id;
 }
 
-function parseUseGeminiParam() {
-  const params = new URLSearchParams(location.search);
-  if (!params.has("use_gemini")) return null;
-  const raw = params.get("use_gemini").trim().toLowerCase();
-  return !["0", "false", "no", "off"].includes(raw);
-}
-
 async function fetchHealth() {
   try {
     const res = await fetch(window.navaidApi("/health"));
@@ -108,57 +129,18 @@ async function fetchHealth() {
   }
 }
 
-function geminiPrefKey() {
-  return "navaid.use_gemini";
-}
-
-function parseStoredGemini() {
-  try {
-    const raw = sessionStorage.getItem(geminiPrefKey());
-    if (raw == null) return null;
-    return raw === "true";
-  } catch {
-    return null;
-  }
-}
-
-function setSwitch(on) {
-  const enabled = Boolean(on);
-  els.gemini.setAttribute("aria-checked", enabled ? "true" : "false");
-  els.gemini.classList.toggle("switch--on", enabled);
-  if (els.geminiState) els.geminiState.textContent = enabled ? "On" : "Off";
-  try {
-    sessionStorage.setItem(geminiPrefKey(), enabled ? "true" : "false");
-  } catch {
-    /* ignore quota / private mode */
-  }
-  refreshGeminiChrome();
-}
-
-function useGemini() {
-  return els.gemini.getAttribute("aria-checked") === "true";
-}
-
 let geminiAuthLabel = "none";
 let geminiConfigured = false;
 
 function defaultHint() {
-  if (useGemini()) {
-    return geminiConfigured
-      ? `Gemini narration on (${geminiAuthLabel}). Shift+Enter sends.`
-      : "Gemini narration on, but no API key or ADC — engines will still answer. Shift+Enter sends.";
-  }
-  return "Gemini narration off. Answers use the engine template only. Shift+Enter sends.";
+  return geminiConfigured
+    ? `Narration on (${geminiAuthLabel}). Enter sends. Shift+Enter adds a line.`
+    : "Narration on, but no API key or ADC — engines still answer with the template. Enter sends.";
 }
 
 function refreshGeminiChrome() {
-  const on = useGemini();
   if (els.geminiStatus) {
-    els.geminiStatus.textContent = on
-      ? geminiConfigured
-        ? `on · ${geminiAuthLabel}`
-        : "on · unavailable"
-      : "off";
+    els.geminiStatus.textContent = geminiConfigured ? `on · ${geminiAuthLabel}` : "on · template fallback";
   }
   if (!asking && els.hint) els.hint.textContent = defaultHint();
 }
@@ -372,8 +354,31 @@ function fillList(node, items, emptyText) {
   for (const item of values) node.append(el("li", { text: String(item) }));
 }
 
+function constraintKey(type) {
+  return String(type || "")
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-");
+}
+
+function constraintWhy(type) {
+  return CONSTRAINT_WHY[constraintKey(type)] || "";
+}
+
+function constraintWhyNode(type) {
+  const text = constraintWhy(type);
+  if (!text) return null;
+  return el("p", { class: "constraint-why", text });
+}
+
+function uniqueConstraintWhyNodes(types) {
+  const present = new Set((types || []).map(constraintKey).filter((key) => CONSTRAINT_WHY[key]));
+  return CONSTRAINT_ORDER.filter((key) => present.has(key)).map((key) => constraintWhyNode(key));
+}
+
 function constraintBadge(type, multiplier) {
-  const key = String(type || "").toLowerCase();
+  const key = constraintKey(type);
   const cls =
     key === "landside"
       ? "badge badge--landside"
@@ -384,17 +389,52 @@ function constraintBadge(type, multiplier) {
           : "badge badge--demand";
   const mult = multiplier ?? CONSTRAINT_MULT[key] ?? "";
   const label = type ? `${type}${mult !== "" ? ` ×${fmt(mult, 2)}` : ""}` : "—";
-  return el("span", { class: cls, text: label });
+  const why = constraintWhy(type);
+  return el("span", { class: cls, text: label, title: why || undefined });
+}
+
+function defaultEnvelope() {
+  return {
+    as_of: "awaiting query",
+    confidence: "—",
+    assumptions: [
+      "US commercial primary airports; New England = CT, ME, MA, NH, RI, VT",
+      "Profit proxy is capacity unlock, not PFC/bond/NPV",
+      "T-100 is segment traffic, not true O&D",
+    ],
+    uncertainties: ["No engine run yet."],
+    out_of_scope: ["PFC / NPV / airline equity"],
+    sources: ["DuckDB warehouse (after first ask)"],
+  };
+}
+
+function resetEnvelope() {
+  const blank = defaultEnvelope();
+  if (els.asOf) els.asOf.textContent = blank.as_of;
+  if (els.confidence) els.confidence.textContent = blank.confidence;
+  fillList(els.assumptions, blank.assumptions, "None listed");
+  fillList(els.uncertainties, blank.uncertainties, "None listed");
+  fillList(els.oos, blank.out_of_scope, "None listed");
+  fillList(els.sources, blank.sources, "None listed");
 }
 
 function renderEnvelope(envelope) {
-  if (!envelope) return;
+  if (!envelope) {
+    resetEnvelope();
+    return;
+  }
   els.asOf.textContent = envelope.as_of || "unknown";
   els.confidence.textContent = envelope.confidence || "—";
   fillList(els.assumptions, envelope.assumptions, "None listed");
   fillList(els.uncertainties, envelope.uncertainties, "None listed");
   fillList(els.oos, envelope.out_of_scope, "None listed");
   fillList(els.sources, envelope.sources, "None listed");
+}
+
+function openEnvelopeModal() {
+  if (!els.envelopeModal) return;
+  if (typeof els.envelopeModal.showModal === "function") els.envelopeModal.showModal();
+  else els.envelopeModal.setAttribute("open", "");
 }
 
 function tableFromRows(headers, rows) {
@@ -439,10 +479,12 @@ function renderRanking(tables, traces) {
   const peers = tables.ranking_peer_set;
   const peerTxt = Array.isArray(peers) && peers.length ? `Peer set S: ${peers.join(", ")}` : "";
   const byAirport = Object.fromEntries((traces || []).map((t) => [t.airport, t]));
+  const types = [];
   const rows = ranking.map((row) => {
     const trace = byAirport[row.airport] || {};
     const constraint = row.constraint_type || trace.constraint_type;
     const mult = trace.constraint_multiplier;
+    types.push(constraint);
     return [
       row.rank ?? trace.rank,
       row.airport,
@@ -451,17 +493,16 @@ function renderRanking(tables, traces) {
       constraintBadge(constraint, mult),
     ];
   });
-  return foldPanel({
-    kicker: "Rankings",
-    count: ranking.length === 1 ? "1 airport" : `${ranking.length} airports`,
-    trail: peerTxt,
-    body: el("div", { class: "table-wrap" }, tableFromRows(["Rank", "Airport", "ICAO", "TEOI", "Constraint"], rows)),
-  });
+  const wrap = el("section", { class: "process-block" });
+  wrap.append(el("h3", { text: peerTxt || "Rankings" }));
+  wrap.append(el("div", { class: "table-wrap" }, tableFromRows(["Rank", "Airport", "ICAO", "TEOI", "Constraint"], rows)));
+  for (const note of uniqueConstraintWhyNodes(types)) wrap.append(note);
+  return wrap;
 }
 
 function metricTable(title, obj) {
   if (!obj || typeof obj !== "object") return null;
-  const wrap = el("section");
+  const wrap = el("section", { class: "process-block" });
   wrap.append(el("h3", { text: title }));
   const rows = Object.entries(obj)
     .filter(([, v]) => v == null || ["string", "number", "boolean"].includes(typeof v) || Array.isArray(v))
@@ -474,60 +515,50 @@ function renderCongestion(payload) {
   if (!payload?.metrics) return null;
   const airports = payload.airports || Object.keys(payload.metrics);
   const axes = [
-    "delay_pct",
-    "avg_arrival_delay_min",
-    "cancel_pct",
-    "ops_per_runway",
-    "live_faa_status",
-    "constraint_type",
+    ["delay_pct", "Share of flights delayed", true],
+    ["avg_arrival_delay_min", "Average arrival delay (min)", false],
+    ["cancel_pct", "Cancellation rate", true],
+    ["ops_per_runway", "Operations per runway", false],
+    ["live_faa_status", "Live FAA status", false],
+    ["constraint_type", "Constraint type", false],
+    ["curfew", "Curfew / policy", false],
   ];
   const headers = ["Axis", ...airports, "Winner"];
-  const rows = axes.map((axis) => {
-    const cells = [axis.replaceAll("_", " ")];
+  const rows = axes.map(([axis, label, isPct]) => {
+    const cells = [label];
     for (const code of airports) {
       const metrics = payload.metrics[code] || {};
-      cells.push(metrics[axis] ?? "—");
+      const value = metrics[axis];
+      if (value == null || value === "") cells.push("—");
+      else if (isPct) cells.push(`${fmt(Number(value) <= 1 ? Number(value) * 100 : value, 1)}%`);
+      else cells.push(value);
     }
     cells.push(payload.winner_on_each_axis?.[axis] ?? "—");
     return cells;
   });
-  const wrap = el("section");
+  const wrap = el("section", { class: "process-block" });
   wrap.append(el("h3", { text: "Congestion compare (no single score)" }));
   wrap.append(el("div", { class: "table-wrap" }, tableFromRows(headers, rows)));
+  const types = airports.map((code) => (payload.metrics[code] || {}).constraint_type);
+  for (const note of uniqueConstraintWhyNodes(types)) wrap.append(note);
   return wrap;
 }
 
 function renderExtraTables(tables) {
   const nodes = [];
-  const labels = [];
   if (tables?.congestion) {
     const node = renderCongestion(tables.congestion);
-    if (node) {
-      nodes.push(node);
-      labels.push("congestion");
-    }
+    if (node) nodes.push(node);
   }
   if (tables?.unmet) {
     const node = metricTable("Unmet demand", tables.unmet);
-    if (node) {
-      nodes.push(node);
-      labels.push("unmet");
-    }
+    if (node) nodes.push(node);
   }
   if (tables?.longhaul) {
     const node = metricTable("Long-haul share", tables.longhaul);
-    if (node) {
-      nodes.push(node);
-      labels.push("long-haul");
-    }
+    if (node) nodes.push(node);
   }
-  if (!nodes.length) return null;
-  return foldPanel({
-    kicker: "Engine tables",
-    count: nodes.length === 1 ? "1 table" : `${nodes.length} tables`,
-    trail: labels.join(" · "),
-    body: nodes,
-  });
+  return nodes;
 }
 
 function renderWaterfall(trace) {
@@ -538,6 +569,8 @@ function renderWaterfall(trace) {
     constraintBadge(trace.constraint_type, trace.constraint_multiplier),
   );
   figure.append(cap);
+  const why = constraintWhyNode(trace.constraint_type);
+  if (why) figure.append(why);
   if (trace.formula_text) figure.append(el("p", { class: "formula", text: trace.formula_text }));
   if (trace.weights_dropped?.length) {
     figure.append(
@@ -596,54 +629,54 @@ function renderWaterfall(trace) {
 }
 
 function renderTraces(traces) {
-  if (!traces?.length) return null;
+  if (!traces?.length) return [];
   const ordered = [...traces].sort((a, b) => (a.rank || 99) - (b.rank || 99));
-  const codes = ordered.map((t) => t.airport).filter(Boolean);
-  return foldPanel({
-    kicker: "TEOI waterfall",
-    count: ordered.length === 1 ? "1 trace" : `${ordered.length} traces`,
-    trail: codes.join(", "),
-    body: [
-      el("p", {
-        class: "section-note",
-        text: "Raw metric → peer min-max → weight → contribution → constraint multiplier → score.",
-      }),
-      ...ordered.map((trace) => renderWaterfall(trace)),
-    ],
-  });
+  return [
+    el("p", {
+      class: "section-note",
+      text: "Raw metric → peer min-max → weight → contribution → constraint multiplier → score.",
+    }),
+    ...ordered.map((trace) => renderWaterfall(trace)),
+  ];
 }
 
-function stepTrail(steps) {
+function renderProcessCard(event) {
+  const kind = String(event?.kind || "thought");
+  const card = el("article", { class: `process-card process-card--${kind}` });
+  card.append(el("p", { class: "process-card__kind", text: kind }));
+  if (event?.title) card.append(el("h3", { text: event.title }));
+  if (event?.detail) card.append(el("p", { class: "process-card__detail", text: event.detail }));
+  return card;
+}
+
+function processTrail(events) {
   const names = [];
-  for (const step of steps || []) {
-    const name = String(step.name || "").trim();
-    if (name && names[names.length - 1] !== name) names.push(name);
+  for (const event of events || []) {
+    const title = String(event.title || event.kind || "").trim();
+    if (title && names[names.length - 1] !== title) names.push(title);
   }
   return names;
 }
 
-function renderTurnSteps(steps) {
-  const list = Array.isArray(steps) ? steps : [];
-  const ol = el("ol", { class: "step-list" });
-  if (!list.length) {
-    ol.append(el("li", { text: "No steps recorded for this turn." }));
-  } else {
-    for (const step of list) {
-      const item = el("li");
-      const label = el("div", { class: "step-list__name" });
-      label.append(el("strong", { text: step.name || `step ${step.index}` }));
-      item.append(label);
-      if (step.detail) {
-        item.append(el("div", { class: "step-list__detail", text: step.detail }));
-      }
-      ol.append(item);
-    }
-  }
+function processBodyNodes(answer) {
+  const nodes = [];
+  for (const event of answer.process || []) nodes.push(renderProcessCard(event));
+  const ranking = renderRanking(answer.tables || {}, answer.teoi_traces || []);
+  if (ranking) nodes.push(ranking);
+  nodes.push(...renderTraces(answer.teoi_traces || []));
+  nodes.push(...renderExtraTables(answer.tables || {}));
+  return nodes.filter(Boolean);
+}
+
+function renderProcessFold(answer) {
+  const body = processBodyNodes(answer);
+  if (!body.length) return null;
+  const events = answer.process || [];
   return foldPanel({
-    kicker: "Working",
-    count: list.length === 1 ? "1 step" : `${list.length} steps`,
-    trail: stepTrail(list).join(" → "),
-    body: ol,
+    kicker: "Process",
+    count: events.length ? `${events.length} beats` : "workings",
+    trail: processTrail(events).join(" → "),
+    body,
   });
 }
 
@@ -653,12 +686,7 @@ function renderUnsupported(parts) {
   for (const part of parts) {
     list.append(el("li", { text: `${part.text}: ${part.reason}` }));
   }
-  return foldPanel({
-    kicker: "Unsupported",
-    count: parts.length === 1 ? "1 part" : `${parts.length} parts`,
-    trail: parts.map((p) => p.text).filter(Boolean).join(" · "),
-    body: list,
-  });
+  return el("div", { class: "turn__unsupported" }, el("h3", { text: "Out of scope" }), list);
 }
 
 function renderCitations(citations) {
@@ -672,14 +700,16 @@ function renderCitations(citations) {
     if (cite.as_of) item.append(document.createTextNode(` · as_of ${cite.as_of}`));
     list.append(item);
   }
-  return foldPanel({
-    kicker: "Citations",
-    count: citations.length === 1 ? "1 source" : `${citations.length} sources`,
-    body: list,
-  });
+  const wrap = el("div", { class: "turn__citations" });
+  wrap.append(el("h3", { text: "Citations" }), list);
+  return wrap;
 }
 
-function renderTurn(question, answer) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function renderTurn(question, answer) {
   const item = el("li", { class: "turn" });
   const user = el("div", { class: "turn--user" });
   user.append(el("p", { class: "turn__who", text: "You" }), el("p", { class: "turn__body", text: question }));
@@ -695,52 +725,55 @@ function renderTurn(question, answer) {
   head.append(el("p", { class: "turn__who", text: "Navaid" }), listen);
   agent.append(head);
   if (answer.reconstructed_query && answer.reconstructed_query !== question) {
-    agent.append(el("p", { class: "turn__recon", text: `Reconstructed: ${answer.reconstructed_query}` }));
+    agent.append(el("p", { class: "turn__recon", text: `Interpreted as: ${answer.reconstructed_query}` }));
   }
-  if (answer.reconstruction_notes) {
-    agent.append(el("p", { class: "turn__recon", text: answer.reconstruction_notes }));
-  }
-  if (answer.subgoals?.length) {
-    const row = el("div", { class: "subgoal-row" });
-    for (const sg of answer.subgoals) {
-      row.append(el("span", { class: "badge", text: `${sg.intent}${sg.entities?.length ? ` · ${sg.entities.join(", ")}` : ""}` }));
-    }
-    agent.append(row);
-  }
-  for (const section of answer.sections || []) {
-    const block = el("div", { class: "turn__section" });
-    block.append(el("h3", { text: section.heading || "Section" }));
-    const prose = el("div", { class: "prose-answer", html: renderMarkdown(section.body || "") });
-    block.append(prose);
-    agent.append(block);
-  }
-  const folds = el("div", { class: "turn__folds" });
-  for (const panel of [
-    renderTurnSteps(answer.steps),
-    renderRanking(answer.tables || {}, answer.teoi_traces || []),
-    renderTraces(answer.teoi_traces || []),
-    renderExtraTables(answer.tables || {}),
-    renderCitations(answer.citations || []),
-    renderUnsupported(answer.unsupported_parts),
-  ]) {
-    if (panel) folds.append(panel);
-  }
-  agent.append(folds);
+
+  const events = answer.process || [];
+  const stage = el("div", { class: "process-stage" });
+  agent.append(stage);
   item.append(user, agent);
   els.transcript.append(item);
   els.empty.hidden = true;
   item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+
+  if (events.length) {
+    for (const event of events) {
+      stage.append(renderProcessCard(event));
+      item.scrollIntoView({ block: "nearest" });
+      await sleep(PROCESS_PLAY_MS);
+    }
+  }
+
+  const processFold = renderProcessFold(answer);
+  if (processFold) stage.replaceWith(processFold);
+  else stage.remove();
+
+  for (const section of answer.sections || []) {
+    const block = el("div", { class: "turn__section" });
+    block.append(el("h3", { text: section.heading || "Section" }));
+    const prose = el("div", { class: "prose-answer" });
+    prose.innerHTML = renderMarkdown(section.body || "");
+    decorateIata(prose);
+    block.append(prose);
+    agent.append(block);
+  }
+  const unsupported = renderUnsupported(answer.unsupported_parts);
+  if (unsupported) agent.append(unsupported);
+  const citations = renderCitations(answer.citations || []);
+  if (citations) agent.append(citations);
+  item.scrollIntoView({ block: "nearest", behavior: "smooth" });
   return listen;
 }
 
-function renderAnswer(question, answer) {
-  const listen = renderTurn(question, answer);
+async function renderAnswer(question, answer) {
+  const listen = await renderTurn(question, answer);
   renderEnvelope(answer.envelope);
+  renderMap(answer.map_points);
   if (speakEnabled()) narrateAnswer(answer, listen);
 }
 
 const PENDING_COPY = [
-  "Reconstructing the question…",
+  "Reading the question…",
   "Pulling warehouse metrics…",
   "Scoring TEOI traces…",
   "Locking numbers…",
@@ -824,13 +857,11 @@ function setBusy(on) {
   els.form?.setAttribute("aria-busy", on ? "true" : "false");
   els.submit.disabled = on;
   els.submit.setAttribute("aria-busy", on ? "true" : "false");
-  document.querySelectorAll("[data-prompt], #new-session").forEach((node) => {
+  document.querySelectorAll("[data-prompt], #new-session, #assumptions-btn").forEach((node) => {
     node.disabled = on;
   });
   if (on) {
-    els.hint.textContent = useGemini()
-      ? "Working — reconstruct, engines, then Gemini narration. This can take a few seconds."
-      : "Working — reconstruct and engines (template narration).";
+    els.hint.textContent = "Working — reconstruct, engines, then Gemini narration. This can take a few seconds.";
   } else {
     els.hint.textContent = defaultHint();
   }
@@ -840,6 +871,112 @@ function clearComposer() {
   const field = document.getElementById("question") || els.question;
   if (!field) return;
   field.value = "";
+}
+
+let leafletMap = null;
+let markerLayer = null;
+
+function leaflet() {
+  return window.L;
+}
+
+function setMapPaneVisible(visible) {
+  if (els.mapSidebar) els.mapSidebar.hidden = !visible;
+  els.workbenchGrid?.classList.toggle("workbench__grid--map", visible);
+}
+
+function refreshMapSize() {
+  if (!leafletMap) return;
+  requestAnimationFrame(() => {
+    leafletMap.invalidateSize();
+    setTimeout(() => leafletMap.invalidateSize(), 80);
+  });
+}
+
+function initMap() {
+  const L = leaflet();
+  if (!L || !els.map || leafletMap) return;
+  leafletMap = L.map(els.map, { scrollWheelZoom: false, attributionControl: true }).setView([42.36, -71.06], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 12,
+    attribution: "&copy; OpenStreetMap",
+  }).addTo(leafletMap);
+  markerLayer = L.layerGroup().addTo(leafletMap);
+  refreshMapSize();
+}
+
+function markerRadius(enplanements) {
+  const n = Number(enplanements) || 0;
+  return Math.max(7, Math.min(22, Math.sqrt(Math.max(n, 1)) / 140));
+}
+
+function showMapCard(point) {
+  if (!els.mapCard) return;
+  els.mapCard.hidden = false;
+  els.mapCard.replaceChildren();
+  els.mapCard.append(
+    el("p", { class: "map-card__kicker", text: point.role || "airport" }),
+    el("h3", { text: `${point.name || point.iata} (${point.iata})` }),
+    el("p", { text: `Enplanements ${fmt(point.enplanements, 0)}` }),
+    el("p", {}, constraintBadge(point.constraint)),
+    point.teoi != null ? el("p", { text: `TEOI ${fmt(point.teoi, 1)}` }) : null,
+    point.load_factor != null ? el("p", { text: `Load factor ${fmt(Number(point.load_factor) <= 1 ? Number(point.load_factor) * 100 : point.load_factor, 1)}%` }) : null,
+    point.delay_pct != null ? el("p", { text: `Delay ${fmt(Number(point.delay_pct) <= 1 ? Number(point.delay_pct) * 100 : point.delay_pct, 1)}%` }) : null,
+    point.why ? el("p", { class: "constraint-why", text: point.why }) : null,
+  );
+}
+
+function renderMap(points) {
+  const usable = (points || []).filter((p) => Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lon)));
+  if (!usable.length) {
+    hideMapPane();
+    return;
+  }
+  setMapPaneVisible(true);
+  initMap();
+  const L = leaflet();
+  if (!L || !leafletMap || !markerLayer) {
+    hideMapPane();
+    return;
+  }
+  if (els.mapEmpty) els.mapEmpty.hidden = true;
+  if (els.mapCard) els.mapCard.hidden = true;
+  markerLayer.clearLayers();
+  const bounds = [];
+  for (const point of usable) {
+    const color = CONSTRAINT_COLOR[constraintKey(point.constraint)] || "#1f4e79";
+    const marker = L.circleMarker([point.lat, point.lon], {
+      radius: markerRadius(point.enplanements),
+      color,
+      fillColor: color,
+      fillOpacity: point.highlight ? 0.85 : 0.55,
+      weight: point.highlight ? 3 : 1.5,
+    });
+    const teoiBit = point.teoi != null ? ` · TEOI ${fmt(point.teoi, 1)}` : "";
+    const delayBit = point.delay_pct != null ? ` · delay ${fmt(Number(point.delay_pct) <= 1 ? Number(point.delay_pct) * 100 : point.delay_pct, 1)}%` : "";
+    marker.bindTooltip(`${point.name || point.iata} (${point.iata}) · ${point.constraint || "—"}${teoiBit}${delayBit}`);
+    marker.on("click", () => showMapCard(point));
+    markerLayer.addLayer(marker);
+    bounds.push([point.lat, point.lon]);
+  }
+  if (bounds.length === 1) leafletMap.setView(bounds[0], 7);
+  else leafletMap.fitBounds(bounds, { padding: [28, 28], maxZoom: 8 });
+  refreshMapSize();
+}
+
+function hideMapPane() {
+  if (markerLayer) markerLayer.clearLayers();
+  if (els.mapCard) {
+    els.mapCard.hidden = true;
+    els.mapCard.replaceChildren();
+  }
+  if (els.mapEmpty) els.mapEmpty.hidden = true;
+  setMapPaneVisible(false);
+}
+
+function resetMap() {
+  hideMapPane();
+  if (leafletMap) leafletMap.setView([42.36, -71.06], 5);
 }
 
 async function ask(question) {
@@ -860,7 +997,7 @@ async function ask(question) {
       body: JSON.stringify({
         question: q,
         session_id: sessionId,
-        use_gemini: useGemini(),
+        use_gemini: true,
       }),
     });
     const payload = await res.json().catch(() => ({}));
@@ -874,7 +1011,7 @@ async function ask(question) {
       return;
     }
     clearPendingTurn();
-    renderAnswer(q, payload);
+    await renderAnswer(q, payload);
     announce("Answer ready.");
   } catch (err) {
     const message = err instanceof Error ? err.message : "Network error";
@@ -892,20 +1029,19 @@ async function ask(question) {
 async function init() {
   setSessionId(getSessionId());
   const params = new URLSearchParams(location.search);
-  const paramGemini = parseUseGeminiParam();
   const health = await fetchHealth();
   const keyPresent = Boolean(health?.gemini_configured);
   const auth = health?.gemini_auth || (keyPresent ? "configured" : "none");
   geminiConfigured = keyPresent;
   geminiAuthLabel = health?.model || auth;
-  const stored = parseStoredGemini();
-  setSwitch(paramGemini ?? stored ?? keyPresent);
+  refreshGeminiChrome();
   setSpeak(parseStoredSpeak() ?? false);
   els.warehouse.textContent = health?.warehouse ? "snapshot" : "missing";
+  setMapPaneVisible(false);
 
-  els.gemini.addEventListener("click", (event) => {
+  els.assumptionsBtn?.addEventListener("click", (event) => {
     event.preventDefault();
-    setSwitch(!useGemini());
+    openEnvelopeModal();
   });
   els.speak?.addEventListener("click", (event) => {
     event.preventDefault();
@@ -919,6 +1055,8 @@ async function init() {
     setBusy(false);
     els.transcript.replaceChildren();
     els.empty.hidden = false;
+    resetEnvelope();
+    resetMap();
     showError("");
     announce("New session.");
   });
@@ -934,10 +1072,9 @@ async function init() {
   });
   els.question.addEventListener("keydown", (event) => {
     if (event.key !== "Enter") return;
-    if (event.shiftKey) {
-      event.preventDefault();
-      ask(els.question.value);
-    }
+    if (event.shiftKey) return;
+    event.preventDefault();
+    ask(els.question.value);
   });
 
   const preset = params.get("q");

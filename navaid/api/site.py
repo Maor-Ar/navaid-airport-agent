@@ -51,6 +51,13 @@ def _template(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _page_title(title: str) -> str:
+    cleaned = (title or "").strip() or "Navaid"
+    if cleaned.lower() == "navaid" or cleaned.lower().endswith(" navaid"):
+        return cleaned
+    return f"{cleaned} — Navaid"
+
+
 def render_page(
     page: str,
     *,
@@ -58,16 +65,17 @@ def render_page(
     description: str,
     main: str,
     scripts: str = "",
+    status_code: int = 200,
 ) -> HTMLResponse:
     html = (
         _template("base.html")
-        .replace("{{title}}", title)
+        .replace("{{title}}", _page_title(title))
         .replace("{{description}}", description)
         .replace("{{page}}", page)
         .replace("{{main}}", main)
         .replace("{{scripts}}", scripts)
     )
-    return HTMLResponse(html)
+    return HTMLResponse(html, status_code=status_code)
 
 
 def _toc_html(toc: list[tuple[int, str, str]]) -> str:
@@ -118,7 +126,10 @@ def workbench() -> HTMLResponse:
         title="Workbench",
         description="Analyst workbench over POST /ask — steps, TEOI waterfall, envelope.",
         main=_template("workbench.html"),
-        scripts='<script type="module" src="/static/js/workbench.js"></script>',
+        scripts=(
+            '<script src="/static/vendor/leaflet/leaflet.js"></script>'
+            '<script type="module" src="/static/js/workbench.js"></script>'
+        ),
     )
 
 
@@ -174,6 +185,16 @@ def favicon() -> FileResponse:
     return FileResponse(path, media_type="image/svg+xml")
 
 
+def not_found_page() -> HTMLResponse:
+    return render_page(
+        "home",
+        title="Page not found",
+        description="That URL is not part of Navaid.",
+        main=_template("not_found.html"),
+        status_code=404,
+    )
+
+
 def mount_site(app: FastAPI) -> None:
     """Register HTML routes and /static. Call from create_app after API routes."""
 
@@ -199,4 +220,4 @@ def exported_pages() -> dict[str, str]:
     }
 
 
-__all__ = ["exported_pages", "mount_site", "router"]
+__all__ = ["exported_pages", "mount_site", "not_found_page", "router"]
