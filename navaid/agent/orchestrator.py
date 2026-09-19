@@ -601,19 +601,17 @@ def _align_sections(
     template: list[Section],
     subgoals: Sequence[Subgoal],
 ) -> list[Section]:
-    if len(parsed) == len(template):
-        return [
-            Section(heading=p.heading or t.heading, body=p.body, subgoal_index=i)
-            for i, (p, t) in enumerate(zip(parsed, template))
-        ]
     out = list(template)
     for i, section in enumerate(parsed):
-        if i < len(out):
-            out[i] = Section(
-                heading=section.heading or out[i].heading,
-                body=section.body,
-                subgoal_index=i,
-            )
+        if i >= len(out):
+            break
+        if i < len(subgoals) and subgoals[i].intent in _META_INTENTS:
+            continue
+        out[i] = Section(
+            heading=section.heading or out[i].heading,
+            body=section.body,
+            subgoal_index=i,
+        )
     return out
 
 

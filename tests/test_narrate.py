@@ -85,13 +85,52 @@ def test_capabilities_template_is_not_warehouse_dump() -> None:
         {"meta": True},
         0,
     )
-    assert "What I can do" in section.heading
+    assert "Navaid" in section.heading
+    assert "What I can do" not in section.heading
     assert "CAPABILITIES" not in section.heading
     blob = section.body.lower()
     assert "warehouse snapshot" not in blob
     assert "enplanements" not in blob
     assert "npv" in blob or "stocks" in blob
     assert "new england" in blob
+    assert "teoi" not in blob
+    assert "gemini" not in blob
+    assert "trading desk" not in blob
+    assert "i refuse" not in blob
+    assert "deterministic" not in blob
+    assert "axis by axis" in blob
+    assert "no single congestion score" in blob
+    assert "long-haul" in blob
+    assert "unmet" in blob
+    assert "anchorage" in blob
+    assert "santa ana" in blob
+    assert "sfo" in blob
+    assert "web search" in blob
+    bullets = [ln for ln in section.body.splitlines() if ln.strip().startswith("-")]
+    assert len(bullets) >= 4
+    assert "help you" in blob
+    assert "lax" not in blob
+    assert "sna" not in blob
+
+
+def test_chitchat_template_matches_product_voice() -> None:
+    section = template_section(
+        Subgoal(intent=Intent.CHITCHAT, query="hello"),
+        {"meta": True},
+        0,
+    )
+    assert "Hello" in section.heading
+    blob = section.body.lower()
+    assert "navaid" in blob
+    assert "expansion" in blob or "rank" in blob
+    assert "gemini" not in blob
+    assert "teoi" not in blob
+    assert "trading desk" not in blob
+    assert "enplanements" not in blob
+    bullets = [ln for ln in section.body.splitlines() if ln.strip().startswith("-")]
+    assert len(bullets) >= 3
+    assert "what i can do" in blob
+    assert "help you" in blob
 
 
 def test_longhaul_leads_with_flight_segment() -> None:

@@ -135,3 +135,58 @@ def test_markdown_tables_and_doc_links() -> None:
     mermaid, _ = render_markdown("```mermaid\nflowchart LR\nA-->B\n```")
     assert "mermaid-wrap" in mermaid
     assert "pre class=\"mermaid\"" in mermaid
+
+
+def test_api_init_does_not_eagerly_import_app() -> None:
+    """Pages export imports navaid.api.site; package init must not load create_app."""
+
+    import ast
+    from pathlib import Path
+
+    init_path = Path(__file__).resolve().parents[1] / "navaid" / "api" / "__init__.py"
+    tree = ast.parse(init_path.read_text(encoding="utf-8"))
+    for node in ast.iter_child_nodes(tree):
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        module = node.module or ""
+        if module in {"navaid.api.app", ".app", "app"}:
+            imported = {alias.name for alias in node.names}
+            assert not imported & {"app", "create_app"}, (
+                "navaid.api.__init__ must not import app/create_app at module level"
+            )
+
+
+def test_site_import_does_not_load_app_or_duckdb() -> None:
+    """GitHub Pages installs fastapi/pydantic/python-dotenv only — no duckdb."""
+
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(repo) + os.pathsep + env.get("PYTHONPATH", "")
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from navaid.api.site import COMPARE_QUESTION, STATIC, exported_pages\n"
+            "import sys\n"
+            "assert 'navaid.api.app' not in sys.modules\n"
+            "assert 'navaid.agent.orchestrator' not in sys.modules\n"
+            "assert 'navaid.agent.sessions' not in sys.modules\n"
+            "assert 'duckdb' not in sys.modules\n"
+            "pages = exported_pages()\n"
+            "assert 'index.html' in pages\n"
+            "assert 'workbench/index.html' in pages\n"
+            "assert COMPARE_QUESTION\n"
+            "assert STATIC.is_dir()\n",
+        ],
+        cwd=repo,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout

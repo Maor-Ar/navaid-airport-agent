@@ -22,7 +22,7 @@ _HUMAN_HEADINGS = {
     Intent.EXPLAIN_CONSTRAINT: "Why this constraint type",
     Intent.AIRPORT_BRIEF: "Airport snapshot",
     Intent.CHITCHAT: "Hello",
-    Intent.CAPABILITIES: "What I can do",
+    Intent.CAPABILITIES: "Navaid",
     Intent.UNSUPPORTED: "Out of scope",
 }
 
@@ -111,23 +111,35 @@ def template_section(subgoal: Subgoal, payload: dict[str, Any] | None, index: in
 
 def _chitchat_body() -> str:
     return (
-        "Hello. I rank terminal-expansion candidates, compare congestion axis by axis, "
-        "measure long-haul on T-100 segments, and estimate unmet demand. "
-        "Gemini explains; engines own the numbers. Try a New England ranking, LAX vs SNA, "
-        "ANC long-haul, or SFO unmet demand. I do not advise on stocks or NPV."
+        "Hello — I'm **Navaid**. I help you decide where a terminal project can unlock capacity.\n"
+        "\n"
+        "- Rank expansion candidates among peers\n"
+        "- Compare congestion axis by axis\n"
+        "- Measure long-haul share\n"
+        "- Estimate unmet passenger demand\n"
+        "\n"
+        "Ask a New England ranking, congestion at Los Angeles and Santa Ana, "
+        "long-haul out of Anchorage, or unmet demand at SFO — or ask **what I can do**.\n"
+        "\n"
+        "Stocks, tickers, and NPV are outside this analysis."
     )
 
 
 def _capabilities_body() -> str:
     return (
-        "I rank terminal-expansion candidates with peer-relative TEOI, compare congestion "
-        "axis by axis (no single congestion score), measure long-haul on T-100 segments, "
-        "and estimate unmet passenger demand from load factor, TAF, and same-metro leakage. "
-        "Gemini writes the explanation; deterministic engines own every number. "
-        "Try: which New England airports are strong terminal-expansion candidates; "
-        "compare LA and Santa Ana congestion; long-haul share out of Anchorage; "
-        "or unmet demand at SFO. I refuse stocks, tickers, and NPV — this is capacity-unlock "
-        "analysis, not a trading desk."
+        "Hi — I'm **Navaid**. I help you decide where a terminal project can unlock capacity.\n"
+        "\n"
+        "- **Rank** terminal-expansion candidates among the peers you name — New England is the designed set\n"
+        "- **Compare congestion** axis by axis — delay versus curfew, so there is no single congestion score\n"
+        "- **Measure long-haul share** from published US segment traffic\n"
+        "- **Estimate unmet passenger demand** from load factor, the forecast, and same-metro leakage, "
+        "without inventing leakage the figures do not show\n"
+        "\n"
+        "Ask which New England airports are strong terminal-expansion candidates, "
+        "how congestion differs at Los Angeles and Santa Ana, the long-haul share out of Anchorage, "
+        "or unmet demand at SFO.\n"
+        "\n"
+        "Stocks, tickers, NPV, and general web search are outside this analysis."
     )
 
 
@@ -622,7 +634,17 @@ def gemini_prompt(
         "\nIf they ask why a constraint label, explain the classifier rule and 2–4 triggering metrics. The multiplier is a later TEOI haircut, not the reason for the label. Do not dump TEOI traces or snake_case field lists. Offer traces only if they ask for the math."
         "\nFor unmet demand, say which component is the gap. If load factor is under 85%, leakage is qualitative only. A forecast gap is not a concourse."
         "\nFor long-haul, lead with flight-segment share, then passenger share, and that T-100 is a sample. ANC→JFK is about 5420 km."
-        "\nFor capabilities or greetings, 4–6 sentences, no metrics, no engine tables. Offer the four sample questions. Refuse stocks/NPV."
+        "\nFor capabilities or greetings, a short welcome plus a compact markdown bullet list — "
+        "not an essay, not a spec dump. Introduce Navaid as helping decide where a terminal "
+        "project can unlock capacity. Four bullets: rank expansion candidates among named peers "
+        "(New England is the designed set); compare congestion axis by axis with no single "
+        "congestion score (delay versus curfew); long-haul share from published US segment traffic; "
+        "unmet passenger demand from load factor, forecast, and same-metro leakage, without inventing "
+        "leakage the figures do not show. Then invite New England ranking, Los Angeles vs Santa Ana "
+        "congestion, Anchorage long-haul, and SFO unmet demand. One quiet line that stocks, "
+        "tickers, NPV, and web search are out of scope. No metrics, no TEOI, no engines, "
+        "no Gemini, no 'I refuse', no 'trading desk'. Greetings are the same voice, slightly shorter, "
+        "with a shorter list and an invite to ask what I can do."
         "\nRefuse only unsupported parts; do not attach an airport brief to a stock question."
     )
     return "\n".join(lines)

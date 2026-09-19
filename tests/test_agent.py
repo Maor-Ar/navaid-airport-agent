@@ -3,11 +3,11 @@ from __future__ import annotations
 import re
 
 from navaid.agent.entities import resolve_one
-from navaid.agent.orchestrator import ask
+from navaid.agent.orchestrator import _align_sections, ask
 from navaid.agent.sessions import new_session_id
 from navaid.agent.tools import ToolContext, rank_expansion, search_corpus
 from navaid.config import NEW_ENGLAND_IATA, WAREHOUSE_PATH
-from navaid.schemas import Intent, ScoringTrace
+from navaid.schemas import Intent, ScoringTrace, Section, Subgoal
 from navaid.warehouse.metrics import MetricsCatalog, SnapshotMissingError, require_snapshot
 from navaid.warehouse.snapshot import build_snapshot
 
@@ -160,12 +160,21 @@ def test_hello_and_capabilities_skip_engines() -> None:
     assert "enplanements" not in hello_blob
     assert "206" not in hello_blob
     assert "rank" in hello_blob or "expansion" in hello_blob
+    assert "gemini" not in hello_blob
+    assert "teoi" not in hello_blob
+    assert "trading desk" not in hello_blob
+    assert any(
+        ln.strip().startswith("-")
+        for section in hello.sections
+        for ln in section.body.splitlines()
+    )
 
     caps = ask("what can you do", session_id=new_session_id(), use_gemini=False)
     assert [sg.intent for sg in caps.subgoals] == [Intent.CAPABILITIES]
     assert caps.process == []
     assert caps.map_points == []
     assert not caps.teoi_traces
+    assert not caps.citations
     assert not any(s.name == "tool" for s in caps.steps)
     blob = " ".join(section.body for section in caps.sections).lower()
     assert "enplanements" not in blob
@@ -173,6 +182,68 @@ def test_hello_and_capabilities_skip_engines() -> None:
     assert "warehouse snapshot" not in blob
     assert "stocks" in blob or "ticker" in blob or "npv" in blob
     assert "new england" in blob or "sfo" in blob
+    assert "teoi" not in blob
+    assert "gemini" not in blob
+    assert "trading desk" not in blob
+    assert "i refuse" not in blob
+    assert "what i can do" not in " ".join(section.heading for section in caps.sections).lower()
+    assert sum(
+        1
+        for section in caps.sections
+        for ln in section.body.splitlines()
+        if ln.strip().startswith("-")
+    ) >= 4
+    assert "axis by axis" in blob
+    assert "no single congestion score" in blob
+
+
+def test_meta_intents_skip_gemini_even_when_requested() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+
+    class BoomRuntime:
+        available = True
+
+        def generate(self, *args, **kwargs):
+            raise AssertionError("Gemini must not narrate capabilities or greetings")
+
+    runtime = BoomRuntime()
+    hello = ask("hello", session_id=new_session_id(), use_gemini=True, runtime=runtime)
+    hello_blob = " ".join(section.body for section in hello.sections)
+    assert "Hello — I'm **Navaid**" in hello_blob
+    assert "trading desk" not in hello_blob.lower()
+    assert any("template (meta" in step.detail for step in hello.steps)
+
+    caps = ask("what can you do?", session_id=new_session_id(), use_gemini=True, runtime=runtime)
+    caps_blob = " ".join(section.body for section in caps.sections)
+    assert "Hi — I'm **Navaid**" in caps_blob
+    assert "What I can do" not in " ".join(section.heading for section in caps.sections)
+    assert "peer-relative TEOI" not in caps_blob
+    assert "Gemini writes" not in caps_blob
+    assert any("template (meta" in step.detail for step in caps.steps)
+
+
+def test_align_sections_keeps_meta_templates() -> None:
+    template = [
+        Section(heading="Navaid", body="Hi — I'm **Navaid**.\n\n- Rank", subgoal_index=0),
+        Section(heading="Congestion comparison", body="axis by axis", subgoal_index=1),
+    ]
+    parsed = [
+        Section(
+            heading="What I can do",
+            body="peer-relative TEOI. Gemini writes the explanation. not a trading desk",
+            subgoal_index=0,
+        ),
+        Section(heading="Congestion comparison", body="Gemini congestion story", subgoal_index=1),
+    ]
+    subgoals = [
+        Subgoal(intent=Intent.CAPABILITIES, query="what can you do"),
+        Subgoal(intent=Intent.CONGESTION_COMPARE, entities=["LAX", "SNA"]),
+    ]
+    aligned = _align_sections(parsed, template, subgoals)
+    assert aligned[0].body == template[0].body
+    assert "trading desk" not in aligned[0].body
+    assert aligned[1].body == "Gemini congestion story"
 
 
 def test_why_bos_mixed_after_new_england_rank() -> None:
@@ -239,6 +310,11 @@ def test_capabilities_after_lax_sna_congestion() -> None:
     assert "pax/gate" not in blob and "pax per gate" not in blob
     assert "warehouse snapshot" not in blob
     assert "stocks" in blob or "ticker" in blob or "npv" in blob
+    assert "teoi" not in blob
+    assert "gemini" not in blob
+    assert "trading desk" not in blob
+    assert "lax" not in blob
+    assert "sna" not in blob
 
 
 def test_sample_queries_fill_process_and_map_points() -> None:
