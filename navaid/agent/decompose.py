@@ -6,7 +6,12 @@ import re
 from typing import TYPE_CHECKING
 
 from navaid.agent.entities import extract_airports, is_new_england
-from navaid.agent.reconstruct import core_question, is_constraint_explain, is_meta_question
+from navaid.agent.reconstruct import (
+    core_question,
+    is_constraint_explain,
+    is_meta_question,
+    is_show_map_request,
+)
 from navaid.config import NEW_ENGLAND_IATA
 from navaid.schemas import Intent, Subgoal, SubgoalStatus
 
@@ -78,11 +83,25 @@ def decompose(
     reuse_traces: bool = False,
     rerun_ranker: bool = False,
     explain_constraint: bool = False,
+    show_map: bool = False,
 ) -> list[Subgoal]:
     """Emit one closed intent per part. Compound questions keep every part."""
 
     q = question.strip()
     core = core_question(q)
+    if show_map or is_show_map_request(core):
+        entities = extract_airports(q, session=None)
+        if not entities and session is not None:
+            entities = list(session.last_entities or session.last_peer_set or [])
+        return [
+            Subgoal(
+                intent=Intent.FOLLOW_UP,
+                entities=entities,
+                status=SubgoalStatus.PENDING,
+                query=core,
+                notes="map display; reuse last airports",
+            )
+        ]
     if not _domain_question(core) and (
         is_meta_question(q) or _CAPABILITIES.search(core) or _CHITCHAT.search(core)
     ):

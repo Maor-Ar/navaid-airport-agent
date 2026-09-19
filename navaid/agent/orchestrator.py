@@ -41,6 +41,7 @@ from navaid.warehouse.metrics import MetricsCatalog, require_snapshot
 
 _SKIP_ENGINE_INTENTS = frozenset({Intent.UNSUPPORTED, Intent.CHITCHAT, Intent.CAPABILITIES})
 _META_INTENTS = frozenset({Intent.CHITCHAT, Intent.CAPABILITIES})
+_TEMPLATE_ONLY_INTENTS = _META_INTENTS | {Intent.FOLLOW_UP}
 
 
 def ask(
@@ -78,6 +79,7 @@ def ask(
             reuse_traces=reconstruction.reuse_traces,
             rerun_ranker=reconstruction.rerun_ranker,
             explain_constraint=reconstruction.explain_constraint,
+            show_map=reconstruction.show_map,
         )
         _step(
             steps,
@@ -99,6 +101,11 @@ def ask(
                 payload_by_subgoal[index] = (
                     {"unsupported": True} if subgoal.intent == Intent.UNSUPPORTED else {"meta": True}
                 )
+                continue
+            if subgoal.intent == Intent.FOLLOW_UP:
+                thought_title, thought_detail = _thought_for(subgoal)
+                process.append(ProcessEvent(kind="thought", title=thought_title, detail=thought_detail))
+                payload_by_subgoal[index] = {"map": True, "airports": list(subgoal.entities)}
                 continue
             planned = plan_tools_for_subgoal(subgoal.intent.value, subgoal.entities, subgoal.notes)
             if subgoal.intent == Intent.EXPLAIN_TEOI:
@@ -140,7 +147,7 @@ def ask(
             gemini = GeminiRuntime()
             use_model = gemini.available
 
-        meta_only = bool(subgoals) and all(sg.intent in _META_INTENTS for sg in subgoals)
+        meta_only = bool(subgoals) and all(sg.intent in _TEMPLATE_ONLY_INTENTS for sg in subgoals)
         template_sections = [
             template_section(sg, payload_by_subgoal.get(i), i) for i, sg in enumerate(subgoals)
         ]
@@ -191,7 +198,7 @@ def ask(
             if sg.intent == Intent.UNSUPPORTED:
                 ok = True
                 unsupported.append(unsupported_from(sg, i))
-            elif sg.intent in _META_INTENTS:
+            elif sg.intent in _TEMPLATE_ONLY_INTENTS:
                 ok = True
             elif payload_by_subgoal.get(i, {}).get("result", {}).get("error"):
                 ok = False
@@ -200,8 +207,18 @@ def ask(
         envelope = _merge_envelopes(envelopes, catalog.as_of(), unsupported)
         entities = _entities_from(finished, reconstruction.filled_airports)
         peer_set = tables.get("ranking_peer_set") or reconstruction.filled_airports or entities
-        map_points = _map_points(catalog, tables, traces, finished)
+        map_points = _map_points(
+            catalog,
+            tables,
+            traces,
+            finished,
+            extra_codes=entities or reconstruction.filled_airports,
+        )
 
+        remembered_intent = next(
+            (s.intent.value for s in finished if s.intent not in _SKIP_ENGINE_INTENTS),
+            next((s.intent.value for s in finished), None),
+        )
         memory.remember(
             question=q,
             reconstructed_query=reconstruction.reconstructed_query,
@@ -209,10 +226,7 @@ def ask(
             peer_set=list(peer_set) if isinstance(peer_set, list) else entities,
             payloads={p["tool"]: p["result"] for p in payloads if "tool" in p},
             traces=traces,
-            intent=next(
-                (s.intent.value for s in finished if s.intent not in _SKIP_ENGINE_INTENTS),
-                None,
-            ),
+            intent=remembered_intent,
         )
         save_session(con, memory)
 
@@ -270,6 +284,9 @@ def _thought_for(subgoal: Subgoal) -> tuple[str, str]:
         if "glossary" in (subgoal.notes or "").lower():
             return ("Local glossary", "Search warehouse notes only. No internet.")
         return ("Airport snapshot", "Warehouse metrics and notes for this airport.")
+    if subgoal.intent == Intent.FOLLOW_UP:
+        airport = ", ".join(subgoal.entities[:4]) or "the last airport"
+        return (f"Show {airport} on the map", "Reuse last airports. Do not re-run a warehouse snapshot.")
     return ("Plan", subgoal.notes or subgoal.intent.value)
 
 
@@ -393,6 +410,7 @@ def _map_points(
     tables: dict[str, Any],
     traces: Sequence[ScoringTrace],
     subgoals: Sequence[Subgoal],
+    extra_codes: Sequence[str] | None = None,
 ) -> list[MapPoint]:
     if all(sg.intent in _SKIP_ENGINE_INTENTS for sg in subgoals):
         return []
@@ -451,11 +469,40 @@ def _map_points(
     if longhaul.get("airport"):
         _mark(longhaul.get("airport"), role="focus", highlight=True)
 
+    brief = tables.get("brief") or {}
+    brief_code = brief.get("iata") or brief.get("airport")
+    if brief_code:
+        _mark(
+            brief_code,
+            role="focus",
+            highlight=True,
+            constraint=brief.get("constraint_type"),
+            load_factor=brief.get("load_factor") or brief.get("lf"),
+            delay_pct=brief.get("delay_pct"),
+        )
+
+    constraint_row = tables.get("constraint") or {}
+    constraint_code = constraint_row.get("iata") or constraint_row.get("airport")
+    if constraint_code:
+        _mark(
+            constraint_code,
+            role="focus",
+            highlight=True,
+            constraint=constraint_row.get("constraint_type"),
+        )
+
     for sg in subgoals:
         if sg.intent in _SKIP_ENGINE_INTENTS:
             continue
         for code in sg.entities:
-            _mark(code, role=wanted.get(str(code).upper(), {}).get("role") or "airport")
+            _mark(
+                code,
+                role=wanted.get(str(code).upper(), {}).get("role") or "airport",
+                highlight=sg.intent == Intent.FOLLOW_UP or wanted.get(str(code).upper(), {}).get("highlight"),
+            )
+
+    for code in extra_codes or []:
+        _mark(code, role=wanted.get(str(code).upper(), {}).get("role") or "airport")
 
     by_teoi = {t.airport: t for t in traces}
     points: list[MapPoint] = []
@@ -566,6 +613,20 @@ def _ingest_result(
                 "lf_threshold",
             )
         }
+    if tool_name == "airport_metrics":
+        tables["brief"] = {
+            "airport": result.get("airport") or result.get("iata"),
+            "iata": result.get("iata") or result.get("airport"),
+            "constraint_type": result.get("constraint_type"),
+            "load_factor": result.get("load_factor") or result.get("lf"),
+            "delay_pct": result.get("delay_pct"),
+        }
+    if tool_name == "explain_constraint":
+        tables["constraint"] = {
+            "airport": result.get("airport") or result.get("iata"),
+            "iata": result.get("iata") or result.get("airport"),
+            "constraint_type": result.get("constraint_type"),
+        }
     env = result.get("envelope")
     if env:
         try:
@@ -605,7 +666,7 @@ def _align_sections(
     for i, section in enumerate(parsed):
         if i >= len(out):
             break
-        if i < len(subgoals) and subgoals[i].intent in _META_INTENTS:
+        if i < len(subgoals) and subgoals[i].intent in _TEMPLATE_ONLY_INTENTS:
             continue
         out[i] = Section(
             heading=section.heading or out[i].heading,

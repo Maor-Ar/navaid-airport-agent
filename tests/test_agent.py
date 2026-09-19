@@ -330,3 +330,77 @@ def test_sample_queries_fill_process_and_map_points() -> None:
     assert {ev.kind for ev in rank.process} >= {"thought", "tool", "result"}
     assert any(p.iata == "BOS" for p in rank.map_points)
     assert all(p.lat is not None and p.lon is not None for p in rank.map_points)
+
+
+def test_unmet_and_brief_fill_map_points() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    unmet = ask(
+        "What is the unmet flight demand in SFO airport and why?",
+        session_id=new_session_id(),
+        use_gemini=False,
+    )
+    assert any(sg.intent == Intent.UNMET_DEMAND for sg in unmet.subgoals)
+    sfo = next(p for p in unmet.map_points if p.iata == "SFO")
+    assert sfo.lat is not None and sfo.lon is not None
+
+    brief = ask("airport snapshot for BOS", session_id=new_session_id(), use_gemini=False)
+    assert any(sg.intent == Intent.AIRPORT_BRIEF for sg in brief.subgoals)
+    bos = next(p for p in brief.map_points if p.iata == "BOS")
+    assert bos.lat is not None and bos.lon is not None
+
+
+def test_last_option_after_capabilities_runs_sfo_unmet() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    sid = new_session_id()
+    caps = ask("what can you do?", session_id=sid, use_gemini=False)
+    assert [sg.intent for sg in caps.subgoals] == [Intent.CAPABILITIES]
+    assert caps.map_points == []
+
+    second = ask(
+        'do the last option on the list you showed me "Estimate unmet passenger demand"',
+        session_id=sid,
+        use_gemini=False,
+    )
+    intents = [sg.intent for sg in second.subgoals]
+    assert Intent.UNMET_DEMAND in intents
+    assert Intent.AIRPORT_BRIEF not in intents
+    unmet = next(sg for sg in second.subgoals if sg.intent == Intent.UNMET_DEMAND)
+    assert unmet.entities == ["SFO"]
+    assert "SFO" in second.reconstructed_query
+    assert "BOS" not in unmet.entities
+    assert any(p.iata == "SFO" for p in second.map_points)
+    blob = " ".join(section.body for section in second.sections).lower()
+    assert "sfo" in blob
+    assert "unmet" in blob
+
+
+def test_show_on_map_after_airport_does_not_dump_snapshot() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    sid = new_session_id()
+    first = ask(
+        "What is the unmet flight demand in SFO airport and why?",
+        session_id=sid,
+        use_gemini=False,
+    )
+    assert any(p.iata == "SFO" for p in first.map_points)
+
+    second = ask("can you show me this airport on the map?", session_id=sid, use_gemini=False)
+    intents = [sg.intent for sg in second.subgoals]
+    assert Intent.FOLLOW_UP in intents
+    assert Intent.AIRPORT_BRIEF not in intents
+    assert any(p.iata == "SFO" for p in second.map_points)
+    assert all(p.lat is not None and p.lon is not None for p in second.map_points)
+    blob = " ".join(section.body for section in second.sections)
+    lower = blob.lower()
+    assert "map" in lower
+    assert "sfo" in lower
+    assert "warehouse snapshot" not in lower
+    assert "66.8" not in blob
+    assert "pct_longhaul" not in lower
+    assert "enplanements" not in lower
+    tool_names = [ev.detail for ev in second.process if ev.kind == "tool"]
+    assert "airport_metrics" not in tool_names
+    assert "unmet_demand" not in tool_names

@@ -116,3 +116,42 @@ def test_explain_why_bos_mixed_first_turn() -> None:
     assert any(sg.intent == Intent.EXPLAIN_CONSTRAINT for sg in subgoals)
     assert not any(sg.intent == Intent.EXPLAIN_TEOI for sg in subgoals)
     assert next(sg for sg in subgoals if sg.intent == Intent.EXPLAIN_CONSTRAINT).entities == ["BOS"]
+
+
+def test_last_option_after_capabilities_decomposes_to_sfo_unmet() -> None:
+    from navaid.agent.sessions import SessionMemory
+
+    memory = SessionMemory(session_id="t-last-option")
+    memory.remember(
+        question="what can you do?",
+        reconstructed_query="what can you do?",
+        entities=[],
+        intent="CAPABILITIES",
+    )
+    rec = reconstruct("do the last option", memory)
+    subgoals = decompose(rec.reconstructed_query, session=memory)
+    intents = [sg.intent for sg in subgoals]
+    assert Intent.UNMET_DEMAND in intents
+    assert Intent.AIRPORT_BRIEF not in intents
+    unmet = next(sg for sg in subgoals if sg.intent == Intent.UNMET_DEMAND)
+    assert unmet.entities == ["SFO"]
+
+
+def test_show_on_map_is_follow_up_not_brief() -> None:
+    from navaid.agent.sessions import SessionMemory
+
+    memory = SessionMemory(session_id="t-map")
+    memory.remember(
+        question="What is the unmet flight demand in SFO airport and why?",
+        reconstructed_query="What is the unmet flight demand in SFO airport and why?",
+        entities=["SFO"],
+        intent="UNMET_DEMAND",
+    )
+    rec = reconstruct("show me this airport on the map", memory)
+    subgoals = decompose(
+        rec.reconstructed_query,
+        session=memory,
+        show_map=rec.show_map,
+    )
+    assert [sg.intent for sg in subgoals] == [Intent.FOLLOW_UP]
+    assert subgoals[0].entities == ["SFO"]

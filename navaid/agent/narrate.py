@@ -21,6 +21,7 @@ _HUMAN_HEADINGS = {
     Intent.EXPLAIN_TEOI: "Why these scores",
     Intent.EXPLAIN_CONSTRAINT: "Why this constraint type",
     Intent.AIRPORT_BRIEF: "Airport snapshot",
+    Intent.FOLLOW_UP: "Map",
     Intent.CHITCHAT: "Hello",
     Intent.CAPABILITIES: "Navaid",
     Intent.UNSUPPORTED: "Out of scope",
@@ -33,6 +34,7 @@ def _clean_heading(text: str) -> str:
     cleaned = cleaned.replace("LONGHAUL_SHARE:", "").replace("UNMET_DEMAND:", "")
     cleaned = cleaned.replace("EXPLAIN_TEOI:", "").replace("EXPLAIN_CONSTRAINT:", "")
     cleaned = cleaned.replace("AIRPORT_BRIEF:", "")
+    cleaned = cleaned.replace("FOLLOW_UP:", "")
     cleaned = cleaned.replace("UNSUPPORTED:", "").replace("CHITCHAT:", "").replace("CAPABILITIES:", "")
     return cleaned.strip() or "Answer"
 
@@ -79,6 +81,8 @@ def template_section(subgoal: Subgoal, payload: dict[str, Any] | None, index: in
         return Section(heading=heading, body=_chitchat_body(), subgoal_index=index)
     if subgoal.intent == Intent.CAPABILITIES:
         return Section(heading=heading, body=_capabilities_body(), subgoal_index=index)
+    if subgoal.intent == Intent.FOLLOW_UP:
+        return Section(heading=heading, body=_map_display_body(subgoal), subgoal_index=index)
 
     if not payload or payload.get("error"):
         err = (payload or {}).get("error") or "no tool payload"
@@ -140,6 +144,21 @@ def _capabilities_body() -> str:
         "or unmet demand at SFO.\n"
         "\n"
         "Stocks, tickers, NPV, and general web search are outside this analysis."
+    )
+
+
+def _map_display_body(subgoal: Subgoal) -> str:
+    codes = [str(c).upper() for c in (subgoal.entities or []) if c]
+    if not codes:
+        return (
+            "There is no airport from the last answer to place on the map. "
+            "Ask about a specific airport first."
+        )
+    shown = ", ".join(f"**{code}**" for code in codes[:8])
+    extra = f" and {len(codes) - 8} more" if len(codes) > 8 else ""
+    return (
+        f"The map shows {shown}{extra} from the last answer. "
+        "Click a marker for the airport card."
     )
 
 
@@ -581,7 +600,7 @@ def unsupported_from(subgoal: Subgoal, index: int) -> UnsupportedPart:
 def mark_status(subgoal: Subgoal, ok: bool) -> Subgoal:
     if subgoal.intent == Intent.UNSUPPORTED:
         status = SubgoalStatus.UNSUPPORTED
-    elif subgoal.intent in {Intent.CHITCHAT, Intent.CAPABILITIES}:
+    elif subgoal.intent in {Intent.CHITCHAT, Intent.CAPABILITIES, Intent.FOLLOW_UP}:
         status = SubgoalStatus.ANSWERED
     elif ok:
         status = SubgoalStatus.ANSWERED
@@ -668,7 +687,7 @@ def parse_gemini_sections(text: str, subgoals: list[Subgoal]) -> list[Section] |
         idx = len(sections)
         sections.append(Section(heading=heading, body=body, subgoal_index=idx))
     if len(sections) < len(
-        [s for s in subgoals if s.intent not in {Intent.UNSUPPORTED, Intent.CHITCHAT, Intent.CAPABILITIES}]
+        [s for s in subgoals if s.intent not in {Intent.UNSUPPORTED, Intent.CHITCHAT, Intent.CAPABILITIES, Intent.FOLLOW_UP}]
     ) and len(sections) < 1:
         return None
     return sections or None

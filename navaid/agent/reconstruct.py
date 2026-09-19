@@ -65,8 +65,33 @@ _CONSTRAINT_ASK = re.compile(
     r"\b(why|how|explain|gave|labeled|labelled|classified|classification)\b",
     re.IGNORECASE,
 )
-
-
+_META_INTENT_NAMES = frozenset({"CAPABILITIES", "CHITCHAT"})
+_LAST_CAPABILITY = re.compile(
+    r"\b("
+    r"(?:do |run |try |pick |choose )?(?:the |that )?last (?:option|one|item|bullet|sample|capability)"
+    r"|do the last"
+    r"|that last one"
+    r"|the last one"
+    r"|the unmet(?: one)?"
+    r"|unmet(?: passenger)? demand"
+    r"|estimate\s+unmet(?:\s+passenger(?:\s+demand)?)?"
+    r")\b",
+    re.IGNORECASE,
+)
+_SHORT_LAST_CAPABILITY = re.compile(
+    r"^\s*(?:please\s+)?(?:can you\s+|could you\s+)?(?:do\s+|run\s+|try\s+)?"
+    r"(?:estimate|that one|the last|the last one)\s*[.!?]*\s*$",
+    re.IGNORECASE,
+)
+_OTHER_CAPABILITY = re.compile(
+    r"\b(rank|ranking|expansion|congest|long[\s-]?haul|compare)\b",
+    re.IGNORECASE,
+)
+_SHOW_MAP = re.compile(
+    r"\b(?:show|see|display|open|put)\b.{0,40}\bon (?:the |a )?map\b"
+    r"|\bon the map\b",
+    re.IGNORECASE,
+)
 @dataclass
 class Reconstruction:
     reconstructed_query: str
@@ -75,6 +100,7 @@ class Reconstruction:
     reuse_traces: bool = False
     rerun_ranker: bool = False
     explain_constraint: bool = False
+    show_map: bool = False
     added_airports: list[str] = field(default_factory=list)
     filled_airports: list[str] = field(default_factory=list)
 
@@ -89,6 +115,39 @@ def is_meta_question(question: str) -> bool:
     """Capabilities / hello / thanks / help — never inherit last airports."""
 
     return bool(_META_QUESTION.search(core_question(question)))
+
+
+def last_turn_was_meta(session: SessionMemory | None) -> bool:
+    """True when the previous turn was capabilities or a greeting."""
+
+    if session is None:
+        return False
+    if (session.last_intent or "").upper() in _META_INTENT_NAMES:
+        return True
+    if not session.turns:
+        return False
+    last = session.turns[-1] if isinstance(session.turns[-1], dict) else {}
+    text = str(last.get("reconstructed_query") or last.get("question") or "")
+    return is_meta_question(text)
+
+
+def is_show_map_request(question: str) -> bool:
+    """Display the current airports on the map; not a new warehouse snapshot."""
+
+    return bool(_SHOW_MAP.search(core_question(question)))
+
+
+def is_last_capability_option(question: str) -> bool:
+    """Phrases that pick the last sample on the hello / capabilities list."""
+
+    q = core_question(question)
+    if not q or is_meta_question(q) or is_show_map_request(q):
+        return False
+    if _OTHER_CAPABILITY.search(q):
+        return False
+    if _SHORT_LAST_CAPABILITY.search(q):
+        return True
+    return bool(_LAST_CAPABILITY.search(q))
 
 
 def is_constraint_explain(
@@ -130,6 +189,32 @@ def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
             reconstructed_query=core_question(q),
             notes="",
             independent=True,
+        )
+
+    if last_turn_was_meta(session) and is_last_capability_option(q):
+        codes = extract_airports(q, session=None)
+        airport = codes[0] if codes else "SFO"
+        return Reconstruction(
+            reconstructed_query=f"Estimate unmet passenger demand at {airport}",
+            notes=(
+                f"last capabilities sample → unmet demand at {airport}; "
+                "do not copy prior airports or fall back to BOS brief"
+            ),
+            independent=False,
+            filled_airports=[airport],
+        )
+
+    if is_show_map_request(q):
+        codes = extract_airports(q, session=None) or list(
+            session.last_entities or session.last_peer_set or []
+        )
+        shown = ", ".join(codes) if codes else "the last airport"
+        return Reconstruction(
+            reconstructed_query=f"Show {shown} on the map",
+            notes="map display; reuse last airports; do not re-run a warehouse snapshot",
+            independent=False,
+            show_map=True,
+            filled_airports=list(codes),
         )
 
     add_match = _ADD.search(q)
@@ -315,6 +400,8 @@ def _is_teoi_explain(question: str, codes: list[str], session: SessionMemory) ->
 
 def _looks_like_followup(question: str) -> bool:
     if is_meta_question(question) or _UNSUPPORTED_FOLLOWUP.search(question):
+        return False
+    if is_show_map_request(question):
         return False
     q = question.lower()
     if re.search(r"\b(it|they|them|that|those|the same|again)\b", q):

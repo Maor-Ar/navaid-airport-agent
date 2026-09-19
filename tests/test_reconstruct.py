@@ -34,6 +34,29 @@ def _session_after_rank() -> SessionMemory:
     return memory
 
 
+def _session_after_capabilities() -> SessionMemory:
+    memory = SessionMemory(session_id="t-caps")
+    memory.remember(
+        question="what can you do?",
+        reconstructed_query="what can you do?",
+        entities=[],
+        intent="CAPABILITIES",
+    )
+    return memory
+
+
+def _session_after_unmet_sfo() -> SessionMemory:
+    memory = SessionMemory(session_id="t-unmet")
+    memory.remember(
+        question="What is the unmet flight demand in SFO airport and why?",
+        reconstructed_query="What is the unmet flight demand in SFO airport and why?",
+        entities=["SFO"],
+        payloads={"unmet_demand": {"airport": "SFO"}},
+        intent="UNMET_DEMAND",
+    )
+    return memory
+
+
 def test_first_turn_is_noop() -> None:
     rec = reconstruct("Compare LA and Santa Ana congestion", SessionMemory(session_id="empty"))
     assert rec.independent
@@ -147,3 +170,69 @@ def test_why_bos_mixed_is_constraint_not_teoi() -> None:
         peer = ["BDL", "BGR", "BTV", "MHT", "ORH", "PVD", "PWM"]
         blob = rec.reconstructed_query
         assert not all(code in blob for code in peer), question
+
+
+def test_last_option_after_capabilities_is_sfo_unmet() -> None:
+    memory = _session_after_capabilities()
+    for question in (
+        'do the last option on the list you showed me "Estimate unmet passenger demand"',
+        "do the last option",
+        "the last one",
+        "that last one",
+        "the unmet one",
+        "estimate unmet passenger demand",
+        "estimate",
+    ):
+        rec = reconstruct(question, memory)
+        assert rec.show_map is False, question
+        assert rec.independent is False, question
+        assert rec.filled_airports == ["SFO"], question
+        assert "SFO" in rec.reconstructed_query, question
+        assert "unmet" in rec.reconstructed_query.lower(), question
+        assert "BOS" not in rec.reconstructed_query
+        assert "(airports:" not in rec.reconstructed_query.lower()
+
+
+def test_last_option_after_hello_is_sfo_unmet() -> None:
+    memory = SessionMemory(session_id="t-hello")
+    memory.remember(
+        question="hey",
+        reconstructed_query="hey",
+        entities=[],
+        intent="CHITCHAT",
+    )
+    rec = reconstruct("do the last option", memory)
+    assert rec.filled_airports == ["SFO"]
+    assert "unmet" in rec.reconstructed_query.lower()
+    assert "SFO" in rec.reconstructed_query
+
+
+def test_last_option_does_not_copy_prior_rank_airports() -> None:
+    memory = _session_after_rank()
+    memory.remember(
+        question="what can you do?",
+        reconstructed_query="what can you do?",
+        entities=[],
+        intent="CAPABILITIES",
+    )
+    rec = reconstruct("do the last option", memory)
+    assert rec.filled_airports == ["SFO"]
+    assert "BOS" not in rec.reconstructed_query
+    assert "BDL" not in rec.reconstructed_query
+
+
+def test_show_on_map_reuses_last_airport() -> None:
+    for question in (
+        "can you show me this airport on the map?",
+        "show it on the map",
+        "show this on the map",
+        "show me this airport on the map",
+    ):
+        rec = reconstruct(question, _session_after_unmet_sfo())
+        assert rec.show_map is True, question
+        assert rec.filled_airports == ["SFO"], question
+        assert "SFO" in rec.reconstructed_query
+        assert "on the map" in rec.reconstructed_query.lower()
+        assert "warehouse" not in rec.reconstructed_query.lower()
+        assert rec.explain_constraint is False
+        assert rec.reuse_traces is False

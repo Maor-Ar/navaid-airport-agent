@@ -256,3 +256,21 @@ def test_congestion_template_is_a_story() -> None:
     assert "22:00" in blob or "22:00-07:00" in blob
     assert "airside" in lower
     assert "lax" in lower and "sna" in lower
+
+
+def test_map_display_template_is_short_confirmation() -> None:
+    section = template_section(
+        Subgoal(intent=Intent.FOLLOW_UP, entities=["SFO"], query="show SFO on the map"),
+        {"map": True, "airports": ["SFO"]},
+        0,
+    )
+    assert "FOLLOW_UP" not in section.heading
+    blob = section.body.lower()
+    assert "sfo" in blob
+    assert "map" in blob
+    assert "warehouse snapshot" not in blob
+    assert "66.8" not in section.body
+    assert "pct_longhaul" not in blob
+    assert "enplanements" not in blob
+    sentences = [part for part in section.body.replace("!", ".").split(".") if part.strip()]
+    assert 1 <= len(sentences) <= 3
