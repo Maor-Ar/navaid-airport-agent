@@ -28,6 +28,8 @@ gh auth login --web
 
 That creates **`navaid-airport-agent`**, sets `GCP_PROJECT_ID` / `GCP_SA_KEY` from the existing `gcp-sa-navaid.json`, and pushes `main`. After Actions is green, Pages is `https://<you>.github.io/navaid-airport-agent/`.
 
+The Pages job sets `enablement: true` on `actions/configure-pages` so CI can create the site and set **Source: GitHub Actions**. If that still fails with “Get Pages site failed” (private repo, org policy, or `GITHUB_TOKEN` without administration), open **Settings → Pages** and set **Source** to **GitHub Actions**, then re-run the workflow.
+
 Private repo: `.\scripts\go_live.ps1 -Private` (Pages then needs GitHub Pro).
 
 ## Manual equivalent

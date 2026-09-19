@@ -20,8 +20,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install and test
@@ -39,7 +39,7 @@ jobs:
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Require GCP secrets
         env:
           KEY: ${{ secrets.GCP_SA_KEY }}
@@ -90,12 +90,16 @@ jobs:
     needs: [test, api]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.publish.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Export static site
@@ -109,9 +113,11 @@ jobs:
             ROOT=""
           fi
           PYTHONPATH=. python scripts/export_site.py --out site-dist --api-url "$API_URL" --root "$ROOT"
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site-dist
       - id: publish
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
