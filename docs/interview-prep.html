@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Navaid interview prep</title>
+  <style>
+    :root {
+      --paper: #f3eee3; --ink: #16130f; --soft: #4d473e; --navy: #121a24;
+      --brass: #6f5520; --brass-2: #c4a35a; --rule: #d7cfc0; --ok: #1f4d3a; --bad: #7a3226;
+      --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      --serif: Georgia, "Iowan Old Style", serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.5 var(--sans); color: var(--ink); background: var(--paper); }
+    .shell { display: grid; grid-template-columns: 16rem 1fr; min-height: 100vh; }
+    aside { background: var(--navy); color: var(--paper); padding: 1.25rem 1rem 2rem; position: sticky; top: 0; height: 100vh; overflow: auto; }
+    aside a { color: #c9c2b4; text-decoration: none; display: block; padding: .35rem 0; }
+    aside a:hover, aside a.active { color: var(--brass-2); }
+    .word { font-family: var(--serif); font-size: 1.4rem; }
+    .tag { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: #c9c2b4; }
+    main { padding: 1.5rem 1.75rem 4rem; max-width: 54rem; }
+    h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
+    h1 { font-size: 2rem; margin: 0 0 .4rem; }
+    h2 { font-size: 1.45rem; border-top: 1px solid var(--rule); padding-top: 1.4rem; }
+    .lede { color: var(--soft); font-family: var(--serif); font-size: 1.15rem; }
+    input[type=search] { width: 100%; padding: .55rem .7rem; border: 1px solid var(--rule); background: #fffdf8; font: inherit; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .8rem 0 1.2rem; }
+    .chip { border: 1px solid var(--navy); background: #fffdf8; padding: .25rem .55rem; cursor: pointer; font: inherit; }
+    .chip.on { background: var(--navy); color: var(--paper); }
+    .card { background: #fffdf8; border: 1px solid var(--rule); padding: 1rem 1.1rem; margin: .7rem 0; }
+    .card h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+    details { background: #fffdf8; border: 1px solid var(--rule); padding: .7rem 1rem; margin: .45rem 0; }
+    summary { cursor: pointer; font-weight: 600; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: #efe8d8; padding: 0 .2em; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { border-bottom: 1px solid var(--rule); text-align: left; padding: .4rem .35rem; vertical-align: top; }
+    th { color: var(--navy); }
+    .flash { min-height: 8rem; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; font-size: 1.15rem; }
+    .flash small { display: block; margin-top: .6rem; color: var(--soft); }
+    .quiz label { display: block; margin: .3rem 0; cursor: pointer; }
+    .ok { color: var(--ok); } .bad { color: var(--bad); }
+    .muted { color: var(--soft); }
+    @media (max-width: 52rem) { .shell { grid-template-columns: 1fr; } aside { height: auto; position: relative; } }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div class="word">Navaid</div>
+    <div class="tag">Interview study desk</div>
+    <p class="muted" style="color:#c9c2b4;font-size:.85rem">Private. Not served by the product site.</p>
+    <nav id="toc"></nav>
+  </aside>
+  <main>
+    <p class="tag">Deloitte FDE · Airport investment agent</p>
+    <h1>Study this before the interview</h1>
+    <p class="lede">Say the thesis first, then the math, then the agent loop. If they ask about LangChain, embeddings, or NPV, you already decided against them — and you can say why in one sentence.</p>
+    <input type="search" id="q" placeholder="Search terms, files, questions…" aria-label="Search">
+    <p id="hits" class="muted"></p>
+
+    <section id="pitch">
+      <h2>30-second pitch</h2>
+      <div class="card">
+        <p>Navaid is a <strong>local-first airport investment analyst</strong>. We ingest public FAA/BTS files into <strong>DuckDB</strong>. <strong>Python engines</strong> compute a peer-relative Terminal Expansion Opportunity Index with a full waterfall. <strong>Gemini</strong> reconstructs follow-ups, decomposes compound questions, and narrates — it <em>never</em> ranks. A <strong>number lock</strong> strips any digit that was not in tool JSON. Chat, Gradio, and the site share one FastAPI <code>/ask</code> contract with an assumptions envelope on every answer.</p>
+        <p><strong>Thesis:</strong> terminal renovations are profitable where they unlock unused capacity. Busy is not investable. Landside-bound airports score high. Airside/curfew/slots are penalized. Profit is a capacity-unlock proxy, not PFC/NPV.</p>
+      </div>
+    </section>
+
+    <section id="brief">
+      <h2>How the exam maps onto the product</h2>
+      <table>
+        <tr><th>Brief ask</th><th>What you built</th></tr>
+        <tr><td>Public APIs / data</td><td>FAA enplanements, TAF, NPIAS/AIP, BTS T-100 + delay-cause, OurAirports, live NAS/ASWS overlay</td></tr>
+        <tr><td>Deterministic ranking</td><td>TEOI + ScoringTrace, not LLM ranks</td></tr>
+        <tr><td>Explain reasoning</td><td>Waterfall, <code>steps[]</code>, envelope</td></tr>
+        <tr><td>Follow-ups</td><td>Session memory → reconstruct → tools</td></tr>
+        <tr><td>Chat (+ voice bonus)</td><td>Workbench + Gradio + optional Gemini TTS</td></tr>
+        <tr><td>Assumptions / uncertainty / scope</td><td>Envelope on every answer; stale snapshot always listed</td></tr>
+        <tr><td>Architecture doc</td><td><code>docs/ARCHITECTURE.md</code> and <code>docs/Navaid_Architecture.docx</code></td></tr>
+      </table>
+    </section>
+
+    <section id="glossary">
+      <h2>Field + product glossary</h2>
+      <div class="chip-row" id="gloss-filters"></div>
+      <div id="gloss"></div>
+    </section>
+
+    <section id="stack">
+      <h2>Technologies — what they are and why</h2>
+      <div id="stack-cards"></div>
+    </section>
+
+    <section id="arch">
+      <h2>Architecture you must be able to draw</h2>
+      <pre style="overflow:auto;background:#fffdf8;border:1px solid var(--rule);padding:1rem">Public files → ingest → DuckDB
+                              ↓
+                    engines (TEOI, unmet, long-haul, congestion)
+                              ↓
+User → reconstruct → decompose → tools → number lock → narrate → Answer
+                              ↓
+              FastAPI /ask → workbench / Gradio / CLI</pre>
+      <p>Live FAA skips the warehouse. Curated gates/curfews feed engines because OurAirports does not have them. RAG is DuckDB FTS on airport-keyed notes; it never ranks.</p>
+      <h3>Every <code>/ask</code></h3>
+      <ol>
+        <li><strong>Reconstruct</strong> follow-ups from session (or no-op if independent).</li>
+        <li><strong>Decompose</strong> into closed intents; execute all of them.</li>
+        <li><strong>Plan + run tools</strong> even if Gemini is off (template narration).</li>
+        <li><strong>Number lock</strong> every digit against tool JSON / traces.</li>
+        <li><strong>Envelope</strong> merge: assumptions, uncertainties, out of scope, confidence, sources, <code>as_of</code>.</li>
+        <li><strong>Remember</strong> airports / peer set / traces for the next turn. Empty entity turns do not overwrite last airports.</li>
+      </ol>
+    </section>
+
+    <section id="scoring">
+      <h2>Scoring — say this out loud</h2>
+      <p>TEOI is <strong>peer-relative</strong>. Min-max inside S. Weights sum to 1. Missing feature → drop-and-renormalize. Then multiply by constraint.</p>
+      <p><code>TEOI = 100 * (0.22 demand + 0.18 congestion + 0.18 landside + 0.15 unmet + 0.12 yield + 0.10 growth + 0.05 capital) * multiplier</code></p>
+      <table>
+        <tr><th>Constraint</th><th>×</th><th>One-liner</th></tr>
+        <tr><td>Landside</td><td>1.00</td><td>Building binds; terminal capex unlocks capacity</td></tr>
+        <tr><td>Mixed</td><td>0.75</td><td>Part building, part airfield/policy</td></tr>
+        <tr><td>Airside</td><td>0.40</td><td>Slots / runway / curfew / ATC; more terminal does not create slots</td></tr>
+        <tr><td>Demand-bound</td><td>0.30</td><td>Weak catchment; expansion is speculative</td></tr>
+      </table>
+      <h3>Unmet</h3>
+      <p>max(0, implied − served). LF gap uses threshold 0.85. Leakage only if LF ≥ 0.85 and a same-CBSA peer is growing faster. If SFO’s LF is below 0.85, leakage is <em>qualitative</em> (OAK/SJC), not in the number. TAF 10-year gap can still be the numeric unmet. Slot/curfew still bind.</p>
+      <h3>Long-haul</h3>
+      <p>T-100 <strong>segments</strong>, not O&amp;D. Default 4000 km (Eurocontrol). Report <strong>flight-segment share</strong> and <strong>passenger share</strong>. Cargo out unless the user said “include cargo”. ANC→JFK ≈ 5420 km / 3370 mi. Warehouse sample ≠ full-year enplanements.</p>
+      <h3>Congestion</h3>
+      <p>No fake composite. Delay %, arrival delay, cancel %, ops/runway, live FAA, constraint, curfew. LA → LAX not metro. Santa Ana → SNA not SAT. SNA is curfew-capped; LAX wins delay volume.</p>
+    </section>
+
+    <section id="decisions">
+      <h2>Decisions — “why did you…?”</h2>
+      <div id="decisions-list"></div>
+    </section>
+
+    <section id="code">
+      <h2>Code map</h2>
+      <table>
+        <tr><th>Path</th><th>Owns</th></tr>
+        <tr><td><code>navaid/scoring/</code></td><td>TEOI, unmet, longhaul, congestion, envelope, traces</td></tr>
+        <tr><td><code>navaid/agent/orchestrator.py</code></td><td>The loop. Not LangChain.</td></tr>
+        <tr><td><code>navaid/agent/reconstruct.py</code></td><td>Follow-ups vs independent (AAL must not inherit SFO)</td></tr>
+        <tr><td><code>navaid/agent/decompose.py</code></td><td>Closed intents; unsupported-only has no airport-brief fallback</td></tr>
+        <tr><td><code>navaid/agent/tools.py</code></td><td>Closed tool list; cargo only if notes contain “include cargo”</td></tr>
+        <tr><td><code>navaid/agent/number_lock.py</code></td><td>Digits must appear in payloads; 10-year / 100-point allowed</td></tr>
+        <tr><td><code>navaid/agent/narrate.py</code></td><td>Human headings, rounded templates, Gemini prompt</td></tr>
+        <tr><td><code>navaid/warehouse/</code></td><td>DuckDB snapshot, metrics catalog, sessions, FTS</td></tr>
+        <tr><td><code>navaid/api/app.py</code></td><td><code>/ask</code>, <code>/health</code>, HTML 404</td></tr>
+        <tr><td><code>navaid/ui/site/</code></td><td>Customer workbench, methodology, docs pages</td></tr>
+        <tr><td><code>eval/</code></td><td>Gold questions, KPIs, not LLM-as-judge</td></tr>
+      </table>
+    </section>
+
+    <section id="canonical">
+      <h2>The four questions — model answers</h2>
+      <details open><summary>New England terminal expansion</summary>
+        <p>Peer set is New England (CT, ME, MA, NH, RI, VT). TEOI is relative, not “biggest wins.” BOS is scale and often mixed. Regionals (BDL, PVD, PWM, MHT) can rank as landside-bound. PWM is Portland <em>Maine</em>, not PDX. Rank 1 is strongest terminal-expansion candidate <em>in this set</em>. Waterfall is on the traces.</p>
+      </details>
+      <details><summary>LA vs Santa Ana congestion</summary>
+        <p>LA → LAX. Santa Ana → SNA, not SAT. Axis-by-axis: LAX usually wins delay volume; SNA is high-utilization and curfew-capped (airside). No single congestion score. Terminal at SNA does not buy hours after curfew.</p>
+      </details>
+      <details><summary>Anchorage long-haul</summary>
+        <p>Threshold 4000 km on T-100 segments. Quote flight-segment share and passenger share. Cargo excluded unless asked. Sample warehouse, not every cargo/connecting itinerary. ANC→JFK ~5420 km. International share is a separate number.</p>
+      </details>
+      <details><summary>SFO unmet</summary>
+        <p>Unmet = LF gap + TAF gap + leakage, each clamped at 0. Leakage to OAK/SJC only if LF ≥ 85%. If LF is lower, say that leakage is qualitative and the numeric gap may be the TAF forecast. Slot/curfew still matter; a forecast gap is not a missing concourse.</p>
+      </details>
+    </section>
+
+    <section id="qa">
+      <h2>Reviewer questions — have an answer ready</h2>
+      <div id="qa-list"></div>
+    </section>
+
+    <section id="flash">
+      <h2>Flashcards</h2>
+      <p class="muted">Click the card to flip. Next / previous to walk the deck.</p>
+      <div class="card flash" id="flash-card">Click next</div>
+      <p>
+        <button class="chip" id="flash-prev" type="button">Previous</button>
+        <button class="chip" id="flash-next" type="button">Next</button>
+        <span id="flash-n" class="muted"></span>
+      </p>
+    </section>
+
+    <section id="quiz">
+      <h2>Self-check quiz</h2>
+      <div id="quiz-box"></div>
+      <p id="quiz-score" class="muted"></p>
+    </section>
+  </main>
+</div>
+<script>
+const GLOSS = [
+  ["product", "Navaid", "Local airport-investment agent: DuckDB + deterministic TEOI + Gemini narration."],
+  ["product", "TEOI", "Terminal Expansion Opportunity Index, 0–100, peer-relative inside set S. Not a national grade."],
+  ["product", "Peer set S", "The airports you asked about. Min-max, TEOI, and rank exist only here."],
+  ["product", "ScoringTrace", "Full waterfall: raw, scaled 0–1, weights original/dropped/used, contributions, multiplier, formula, rank."],
+  ["product", "Envelope", "Assumptions, uncertainties, out-of-scope, confidence, sources, as_of. Stale >90 days always listed."],
+  ["product", "Number lock", "Every digit in prose must already appear in tool JSON or traces."],
+  ["product", "Reconstruction", "Rewrite a follow-up into a standalone question using session memory. Independent questions are a no-op."],
+  ["product", "Decomposition", "Split a compound question into closed intents; answer or refuse every part."],
+  ["aviation", "Enplanement", "One passenger boarding. FAA yearly boardings are the demand scale."],
+  ["aviation", "Load factor", "Passengers / seats. Unmet uses threshold 0.85. High LF is seat pressure, not success."],
+  ["aviation", "T-100 segment", "One takeoff-to-landing. ANC→SEA→JFK is two segments. Not true O&D."],
+  ["aviation", "O&D", "True origin and destination itinerary. We do not have it; do not claim T-100 is O&D."],
+  ["aviation", "TAF (FAA)", "Terminal Area Forecast — 10-year planning passengers/ops. Not a weather TAF."],
+  ["aviation", "NPIAS / AIP", "Development-need plan and federal grants. Capital feasibility, not the rank. Already-funded may lower incremental private return."],
+  ["aviation", "Landside", "Building: gates, holdrooms, security, bag claim, curb. Multiplier 1.00."],
+  ["aviation", "Airside", "Runways, slots, weather, ATC, curfew. Multiplier 0.40. More terminal does not create slots."],
+  ["aviation", "Mixed", "Both bind. Multiplier 0.75."],
+  ["aviation", "Demand-bound", "Weak catchment / low LF / leakage served nearby. Multiplier 0.30."],
+  ["aviation", "Leakage", "Same-CBSA passengers using a nearby airport (SFO→OAK/SJC). Counted only if origin LF ≥ 0.85."],
+  ["aviation", "CBSA", "Core-Based Statistical Area — metro used for leakage peers."],
+  ["aviation", "Curfew", "Night noise/ops limit. SNA is the exam example. Qualitative airside bind."],
+  ["aviation", "Slot", "Scheduled permission to take off/land. Policy/airside, not a concourse."],
+  ["aviation", "Hub size", "FAA Large/Medium/Small/Nonhub from enplanements. Not expansion rank."],
+  ["aviation", "IATA / ICAO", "BOS vs KBOS. Product speaks IATA; leftover ties break by ICAO ascending."],
+  ["aviation", "NAS / ASWS", "Live FAA delay overlay. Operations now, not passenger demand, not a TEOI input."],
+  ["aviation", "GDP (aviation)", "Ground Delay Program. Not gross domestic product."],
+  ["aviation", "Long-haul", "Default great-circle >4000 km (Eurocontrol) on T-100 segments. Also international share and optional >6h."],
+  ["aviation", "PFC / NPV", "Passenger Facility Charge / net present value. Out of scope. Profit proxy is capacity unlock."],
+  ["tech", "DuckDB", "Embedded columnar SQL in one file. Warehouse, sessions, FTS. No server."],
+  ["tech", "FTS", "Full-text search over airport-keyed notes. No embeddings."],
+  ["tech", "RAG", "Retrieve notes, quote them. Never ranks. T-100 wins facts."],
+  ["tech", "Pydantic v2", "Shared schemas for FastAPI, traces, Gemini tool JSON. extra=forbid."],
+  ["tech", "FastAPI", "POST /ask is the contract. Gradio and site are skins."],
+  ["tech", "google-genai", "Official SDK, pin <3. AFC disabled. Auth: API key or Vertex ADC."],
+  ["tech", "gemini-2.5-flash", "Default. Engines own numbers; Flash narrates and calls tools. Pro is an override."],
+  ["tech", "AFC", "Automatic function calling. Disabled so we intercept tools for the number lock."],
+  ["tech", "Gradio", "Shipped first as chat + voice. Same Answer object as the designed site."],
+  ["tech", "httpx", "Timeouts, retry, cache for government HTTP. Not requests."],
+  ["airports", "LA → LAX", "Not the whole Los Angeles metro."],
+  ["airports", "Santa Ana → SNA", "John Wayne. Not SAT (San Antonio)."],
+  ["airports", "ANC", "Anchorage. Canonical long-haul. Pin ANC→JFK ~5420 km."],
+  ["airports", "PWM", "Portland Maine. Not PDX Oregon."],
+  ["airports", "AAL", "American Airlines ticker. Not an airport. UNSUPPORTED."],
+  ["airports", "New England", "CT, ME, MA, NH, RI, VT. Deep slice: BOS BDL PVD PWM MHT BTV BGR ORH."],
+];
+
+const STACK = [
+  ["Python 3.12", "Assignment language. Typed engines, pytest, one package `navaid`."],
+  ["DuckDB", "Laptop warehouse for T-100 SQL + sessions + FTS. Postgres is right for a hosted product, wrong for this exam."],
+  ["Pydantic + FastAPI", "One Answer contract. extra=forbid so silent field drops are bugs."],
+  ["Gemini 2.5 Flash", "Function calling + narration. Not the ranker. Vertex ADC or GEMINI_API_KEY."],
+  ["Hand-rolled orchestrator", "Reconstruct / decompose / lock must be visible. LangChain would hide the graded loop."],
+  ["DuckDB FTS RAG", "Tens of notes. Chroma + embeddings is a second database for no gain."],
+  ["Gradio + designed site", "Chat first, then a methodology/workbench skin on the same /ask."],
+  ["pytest + gold eval", "Engine numbers from the same code. Not LLM-as-judge as the product."],
+];
+
+const DECISIONS = [
+  ["Why not LangChain?", "The loop we are graded on (reconstruct, decompose, traces, number lock) must be Python we control. Frameworks hide it, churn APIs, and fight google-genai."],
+  ["Why DuckDB not Postgres?", "Local-first, one file, columnar SQL over T-100. Clone, build snapshot, ask. Postgres is the production sequel, not the exam."],
+  ["Why no embeddings / Chroma?", "Corpus is tens of airport-keyed notes. WHERE airport = ? plus FTS is enough. RAG never ranks."],
+  ["Why Flash not Pro?", "Numbers come from engines. Flash is enough to call tools and narrate. Pro is NAVAID_MODEL override only."],
+  ["Why peer-relative TEOI?", "A national 0–100 would make BOS always win New England. The question is relative inside S. Ask only BOS and the score collapses toward 37 — that is honest, not a bug."],
+  ["Why constraint multipliers after the sum?", "That is the thesis in arithmetic: more terminal does not create slots. Airside 0.40, demand-bound 0.30."],
+  ["Why drop-and-renormalize?", "Never invent gates or TAF. Drop the weight, rescale the rest to 1, disclose it on the trace and envelope."],
+  ["Why 4000 km not 6 hours as default?", "Eurocontrol distance convention is stable. Block hours are often missing; pct_over_6h is optional."],
+  ["Why no single congestion score?", "LAX delay volume and SNA curfew are different facts. A fake index would hide the investment distinction."],
+  ["Why not NPV?", "We do not have PFC, bond, or airline financials. Capacity unlock is the proxy, and copy says so. AAL is refused."],
+  ["Why disable AFC?", "So every tool call is intercepted. Number lock and traces would be skipped if Gemini called tools behind our back."],
+  ["Why cargo off by default?", "The Anchorage question is passenger long-haul. Notes used to contain the word cargo and always turned cargo on — that was a bug. Now only “include cargo”."],
+];
+
+const QA = [
+  ["Isn’t BOS always rank 1?", "Not if S is New England regionals that are more landside-bound, and BOS is mixed/airside. TEOI is not hub size. Show the waterfall."],
+  ["Your SFO leakage is zero. Is that wrong?", "Only if LF ≥ 0.85. Below that, leakage is qualitative. Quote the TAF gap if that is the numeric unmet. Do not invent OAK numbers."],
+  ["Why is confidence low?", "Snapshot as_of is older than 90 days, or a required input is missing. We disclose rather than fake live 2026 ops."],
+  ["Did Gemini pick the New England ranking?", "No. rank_expansion ran the engine. Gemini may narrate. Number lock would strip an invented 99."],
+  ["What happens on “buy AAL” after SFO?", "Independent reconstruction. UNSUPPORTED only. Must not copy SFO into an airport brief. Other parts of a compound question still run."],
+  ["How do follow-ups work?", "DuckDB session: last entities, peer set, traces. “those two” fills LAX and SNA. “why #2 vs #3” reuses traces, does not re-rank. “add PWM” re-runs the ranker on the expanded S."],
+  ["Santa Ana vs San Antonio?", "Entity resolver: Santa Ana → SNA. SAT is San Antonio. Gold eval covers it."],
+  ["Is T-100 every flight out of ANC?", "No. Filtered commercial sample. Totals will not match FAA enplanements. Say sample, segments, cargo excluded."],
+  ["Where is AI actually used?", "Reconstruct, optional decompose help, tool calling, narration, optional TTS. Ingest, TEOI, unmet, long-haul, congestion, rank, lock: Python."],
+  ["How do you stop hallucinations?", "Closed tools, traces attached, number lock, template fallback if Gemini fails, envelope uncertainties, eval gold must-say / must-not-say."],
+  ["What would you do next if hired?", "Refresh the snapshot, richer T-100, optional true O&D if licensed, Postgres if hosted, keep engines as source of truth."],
+  ["Why is PWM in New England?", "Portland Maine. PDX is Oregon. Entity + region list are explicit so the model cannot swap them."],
+  ["Kendall tau in eval?", "Rank correlation vs gold ranking from the same engine. Catches a broken ranker, not Gemini vibes."],
+  ["Voice?", "Bonus. Gemini TTS /speak, browser speech fallback. Speak toggle auto-plays; Listen is manual."],
+];
+
+const CARDS = [
+  ["What is TEOI?", "Terminal Expansion Opportunity Index: peer-relative 0–100 for where a terminal project unlocks capacity."],
+  ["Landside vs airside?", "Building vs runway/slots/curfew. Multipliers 1.00 vs 0.40."],
+  ["Drop-and-renormalize?", "Missing feature: remove its weight, rescale the rest to 1, disclose."],
+  ["T-100 vs O&D?", "Segment = one leg. O&D = true itinerary. We have segments."],
+  ["Long-haul default?", "4000 km Eurocontrol on T-100 segments. Cargo out unless asked."],
+  ["Leakage rule?", "Same CBSA, peer YoY higher, and origin LF ≥ 0.85."],
+  ["LA / Santa Ana?", "LAX / SNA. Not metro, not SAT."],
+  ["PWM?", "Portland Maine, not PDX."],
+  ["AAL?", "Airline ticker. Out of scope."],
+  ["Why no LangChain?", "Must show reconstruct → tools → number lock in our Python."],
+  ["Why no Chroma?", "Tens of notes; DuckDB FTS is enough; RAG never ranks."],
+  ["Number lock?", "Strip digits not present in tool JSON (plus 10, 100, 4000, 5420, 3370)."],
+  ["Stale snapshot?", "as_of older than 90 days → uncertainty and low confidence."],
+  ["Gemini’s job?", "Follow-ups, tools, narration. Never produce a rank."],
+];
+
+const QUIZ = [
+  { q: "TEOI is…", opts: ["A national airport grade", "Peer-relative inside S", "Whatever Gemini outputs"], a: 1 },
+  { q: "Airside multiplier", opts: ["1.00", "0.75", "0.40", "0.30"], a: 2 },
+  { q: "Santa Ana resolves to", opts: ["SAT", "SNA", "LAX"], a: 1 },
+  { q: "Leakage counts when", opts: ["Always if OAK exists", "Only if origin LF ≥ 0.85 and same CBSA peer grows faster", "Whenever delay is high"], a: 1 },
+  { q: "Default long-haul", opts: ["True O&D > 6h", "T-100 segments > 4000 km", "Any international flight"], a: 1 },
+  { q: "Number lock allows", opts: ["Any percent Gemini likes", "Digits from tool JSON / traces", "FAA hub ranks"], a: 1 },
+  { q: "Buy AAL after SFO should", opts: ["Brief SFO", "Refuse only; independent session", "Rank American Airlines hubs"], a: 1 },
+  { q: "RAG may", opts: ["Produce TEOI", "Quote notes; never rank", "Override T-100"], a: 1 },
+];
+
+const toc = [
+  ["pitch", "Pitch"], ["brief", "Exam map"], ["glossary", "Glossary"], ["stack", "Stack"],
+  ["arch", "Architecture"], ["scoring", "Scoring"], ["decisions", "Decisions"],
+  ["code", "Code map"], ["canonical", "Four questions"], ["qa", "Reviewer Q&A"],
+  ["flash", "Flashcards"], ["quiz", "Quiz"],
+];
+const tocEl = document.getElementById("toc");
+toc.forEach(([id, label]) => {
+  const a = document.createElement("a");
+  a.href = "#" + id; a.textContent = label; tocEl.append(a);
+});
+
+const filters = ["all", "product", "aviation", "tech", "airports"];
+const filterRow = document.getElementById("gloss-filters");
+let filter = "all";
+filters.forEach((f) => {
+  const b = document.createElement("button");
+  b.className = "chip" + (f === "all" ? " on" : "");
+  b.textContent = f; b.type = "button";
+  b.onclick = () => { filter = f; [...filterRow.children].forEach((c) => c.classList.toggle("on", c.textContent === f)); renderGloss(); };
+  filterRow.append(b);
+});
+
+function renderGloss(needle = "") {
+  const box = document.getElementById("gloss");
+  box.replaceChildren();
+  const n = needle.trim().toLowerCase();
+  GLOSS.filter(([cat, term, def]) => (filter === "all" || cat === filter) && (!n || (term + def + cat).toLowerCase().includes(n)))
+    .forEach(([, term, def]) => {
+      const d = document.createElement("div");
+      d.className = "card";
+      d.innerHTML = `<h3>${term}</h3><p>${def}</p>`;
+      box.append(d);
+    });
+}
+renderGloss();
+
+document.getElementById("stack-cards").innerHTML = STACK.map(([h, p]) => `<div class="card"><h3>${h}</h3><p>${p}</p></div>`).join("");
+document.getElementById("decisions-list").innerHTML = DECISIONS.map(([h, p]) => `<details><summary>${h}</summary><p>${p}</p></details>`).join("");
+document.getElementById("qa-list").innerHTML = QA.map(([h, p]) => `<details><summary>${h}</summary><p>${p}</p></details>`).join("");
+
+let fi = 0, flipped = false;
+const flash = document.getElementById("flash-card");
+function showFlash() {
+  const [f, b] = CARDS[fi];
+  flash.innerHTML = flipped ? b + "<small>Click to see the prompt</small>" : f + "<small>Click to reveal</small>";
+  document.getElementById("flash-n").textContent = `${fi + 1} / ${CARDS.length}`;
+}
+flash.onclick = () => { flipped = !flipped; showFlash(); };
+document.getElementById("flash-next").onclick = () => { fi = (fi + 1) % CARDS.length; flipped = false; showFlash(); };
+document.getElementById("flash-prev").onclick = () => { fi = (fi + CARDS.length - 1) % CARDS.length; flipped = false; showFlash(); };
+showFlash();
+
+const quizBox = document.getElementById("quiz-box");
+QUIZ.forEach((item, i) => {
+  const d = document.createElement("div");
+  d.className = "card";
+  d.innerHTML = `<p><strong>${i + 1}. ${item.q}</strong></p>` + item.opts.map((o, j) =>
+    `<label><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join("");
+  quizBox.append(d);
+});
+quizBox.addEventListener("change", () => {
+  let ok = 0, n = 0;
+  QUIZ.forEach((item, i) => {
+    const picked = quizBox.querySelector(`input[name=q${i}]:checked`);
+    if (!picked) return;
+    n += 1;
+    if (Number(picked.value) === item.a) ok += 1;
+  });
+  document.getElementById("quiz-score").textContent = n ? `Score ${ok} / ${n} answered (${QUIZ.length} total).` : "";
+});
+
+document.getElementById("q").addEventListener("input", (e) => {
+  const n = e.target.value.trim().toLowerCase();
+  renderGloss(n);
+  let count = 0;
+  document.querySelectorAll("main section, details, .card").forEach((node) => {
+    const hit = !n || node.textContent.toLowerCase().includes(n);
+    if (node.matches("section")) node.style.outline = n && hit ? "2px solid #c4a35a" : "";
+    if (hit && n) count += 1;
+  });
+  document.getElementById("hits").textContent = n ? `Matches highlighted. Glossary filtered.` : "";
+});
+</script>
+</body>
+</html>

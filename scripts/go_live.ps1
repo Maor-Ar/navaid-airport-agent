@@ -16,33 +16,50 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Pick up a freshly installed GitHub CLI without requiring a new terminal.
+$machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$env:Path = "$machinePath;$userPath"
+
 $gh = Join-Path ${env:ProgramFiles} "GitHub CLI\gh.exe"
 if (-not (Test-Path $gh)) {
     $gh = "gh"
 }
 
+function Invoke-Gh {
+    param([Parameter(Mandatory = $true)][string[]]$GhArgs)
+    Write-Host ("+ gh " + ($GhArgs -join " "))
+    & $gh @GhArgs
+    if ($LASTEXITCODE -ne 0) {
+        throw ("gh " + ($GhArgs[0..1] -join " ") + " failed with exit " + $LASTEXITCODE)
+    }
+}
+
 function Assert-GhAuth {
-    & $gh auth status 2>$null | Out-Null
+    cmd /c "`"$gh`" auth status >nul 2>&1" | Out-Null
     if ($LASTEXITCODE -eq 0) {
         return
     }
     Write-Host "Finish GitHub login in the browser (code is on your clipboard)."
-    & $gh auth login --hostname github.com --git-protocol https --web --clipboard
-    if ($LASTEXITCODE -ne 0) {
-        throw "GitHub login did not complete. Re-run this script after: gh auth login --web"
-    }
+    Invoke-Gh -GhArgs @("auth", "login", "--hostname", "github.com", "--git-protocol", "https", "--web", "--clipboard")
 }
 
 Assert-GhAuth
 
-$origin = git remote get-url origin 2>$null
-if (-not $origin) {
+if ((@(git remote) -notcontains "origin")) {
     $visibility = if ($Private) { "--private" } else { "--public" }
     Write-Host "Creating GitHub repo $RepoName ($visibility) without pushing yet..."
-    & $gh repo create $RepoName $visibility --source=. --remote=origin --description "Navaid — airport investment intelligence agent"
-    if ($LASTEXITCODE -ne 0) {
-        throw "gh repo create failed"
-    }
+    Invoke-Gh -GhArgs @(
+        "repo", "create", $RepoName,
+        $visibility,
+        "--source", ".",
+        "--remote", "origin",
+        "--description", "Navaid - airport investment intelligence agent"
+    )
+}
+
+if ((@(git remote) -notcontains "origin")) {
+    throw "Git remote 'origin' was not created. Repo create did not complete."
 }
 
 if (-not $GcpProject) {
@@ -52,20 +69,26 @@ if (-not $GcpProject) {
 Write-Host "Bootstrapping GCP project $GcpProject ..."
 & (Join-Path $PSScriptRoot "bootstrap_gcp.ps1") -Project $GcpProject
 if ($LASTEXITCODE -ne 0) {
-    throw "bootstrap_gcp.ps1 failed — check that you have Owner/Editor on $GcpProject"
+    throw "bootstrap_gcp.ps1 failed - check that you have Owner/Editor on $GcpProject"
 }
 
 Write-Host "Writing GitHub Actions secrets..."
-& $gh secret set GCP_PROJECT_ID -b $GcpProject
+Invoke-Gh -GhArgs @("secret", "set", "GCP_PROJECT_ID", "-b", $GcpProject)
 Get-Content -Raw .\gcp-sa-navaid.json | & $gh secret set GCP_SA_KEY
+if ($LASTEXITCODE -ne 0) {
+    throw "gh secret set GCP_SA_KEY failed with exit $LASTEXITCODE"
+}
 
 Write-Host "Pushing main (this starts the deploy workflow)..."
-git push -u origin main
+cmd /c "git push -u origin main"
+if ($LASTEXITCODE -ne 0) {
+    throw "git push failed with exit $LASTEXITCODE"
+}
 
-$repoUrl = (& $gh repo view --json url --jq .url).Trim()
-$login = (& $gh api user --jq .login).Trim()
+$repoUrl = (Invoke-Gh -GhArgs @("repo", "view", "--json", "url", "--jq", ".url")).Trim()
+$login = (Invoke-Gh -GhArgs @("api", "user", "--jq", ".login")).Trim()
 Write-Host ""
 Write-Host "Repo:    $repoUrl"
 Write-Host "Actions: $repoUrl/actions"
 Write-Host "Pages:   https://$login.github.io/$RepoName/  (live after the workflow is green)"
-Write-Host "If Pages 404s on a private repo, GitHub Settings → Change repository visibility → Public."
+Write-Host "If Pages 404s on a private repo, GitHub Settings -> Change repository visibility -> Public."

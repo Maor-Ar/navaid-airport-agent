@@ -2,7 +2,7 @@
 
 Assignment deliverable: scoring methodology, key tradeoffs, and where/how Gemini is used versus deterministic engines.
 
-Related: [GLOSSARY.md](GLOSSARY.md), [DECISION_LOG.md](DECISION_LOG.md).
+Related: [GLOSSARY.md](GLOSSARY.md), [DECISION_LOG.md](DECISION_LOG.md), Word copy [Navaid_Architecture.docx](Navaid_Architecture.docx).
 
 **Default chat model:** `gemini-2.5-flash` (`NAVAID_MODEL` can override to Pro).  
 **RAG:** DuckDB FTS + airport-keyed notes. **No embedding model. No Chroma.**
@@ -191,9 +191,9 @@ Profit is a **capacity-unlock proxy**, not PFC/bond/NPV. Product copy says so.
 
 Canonical spoken answers:
 
-- **SFO unmet:** high load factors, leakage to OAK/SJC, delay, slot/curfew. Much of the gap is airside/policy, not a missing concourse. Unmet is `max(0, implied − served)`.
+- **SFO unmet:** Unmet is `max(0, implied − served)`. Leakage to OAK/SJC counts only when load factor is at or above 85%. If LF is below the rule, leakage is qualitative. A TAF 10-year gap can still be the numeric unmet. Slot/curfew still bind even when the gap is a forecast, not a missing concourse.
 - **LAX vs SNA:** LAX wins absolute delay volume; SNA is high-utilization and curfew-capped. Compare delay + utilization + constraint type. `"LA"` → LAX; `"Santa Ana"` → SNA, not SAT.
-- **ANC long-haul:** default Eurocontrol **>4000 km** on T-100 **segments**; also **>6h** and **international share**. Cargo out unless asked.
+- **ANC long-haul:** default Eurocontrol **>4000 km** on T-100 **segments**. Report **flight-segment share** and **passenger share**, plus international share. Cargo out unless asked. Warehouse T-100 is a sample.
 - **New England:** BOS is scale; BDL/PVD/PWM/MHT can win as landside-constrained regionals. Peer-relative, not “biggest wins.” New England = CT, ME, MA, NH, RI, VT. PWM is Portland Maine, not PDX.
 
 ### TEOI formula
@@ -249,7 +249,7 @@ Shared ranks (3, 3, 5); leftover ties by ICAO ascending. Deterministic.
 
 No fake single congestion score. Payload:
 
-`{delay_pct, avg_arrival_delay_min, cancel_pct, ops_per_runway, live_faa_status, constraint_type, winner_on_each_axis}`
+`{delay_pct, avg_arrival_delay_min, cancel_pct, ops_per_runway, live_faa_status, constraint_type, curfew, winner_on_each_axis}`
 
 ### ScoringTrace
 

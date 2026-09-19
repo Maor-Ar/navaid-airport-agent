@@ -62,10 +62,10 @@
     <li>Forecast gap: <code>max(0, TAF_10y − implied_current_capacity)</code> if TAF exists</li>
     <li>Leakage: same-CBSA airports growing faster while origin LF is high</li>
   </ul>
-  <p>SFO’s spoken answer: high load factors, leakage to OAK/SJC, delay, slot/curfew. Much of the gap is airside/policy, not a missing concourse.</p>
+  <p>SFO’s spoken answer must match the engine. Load-factor gap is zero unless LF is above 85%. Same-metro leakage to OAK/SJC is counted only when that seat-pressure rule holds; otherwise it is qualitative. A TAF 10-year forecast gap can still produce unmet passengers. Slot/curfew remain the investment caveat: a forecast gap is not a missing concourse.</p>
 
   <h2 id="longhaul">Long-haul: 4000 km</h2>
-  <p>Great-circle kilometres on T-100 <strong>segments</strong>. Default threshold <strong>4000 km</strong> (Eurocontrol). Also report international share and optional <code>pct_over_6h</code>. Pin <code>ANC→JFK</code> at ~5420 km / 3370 mi. Cargo is out unless asked. T-100 is not true O&amp;D: ANC→SEA→JFK is two segments.</p>
+  <p>Great-circle kilometres on T-100 <strong>segments</strong>. Default threshold <strong>4000 km</strong> (Eurocontrol). Report <strong>flight-segment share</strong> and <strong>passenger share</strong>, plus international share and optional <code>pct_over_6h</code>. Pin <code>ANC→JFK</code> at ~5420 km / 3370 mi. Cargo is out unless asked. Warehouse T-100 is a filtered commercial sample — totals will not match full-year FAA enplanements. T-100 is not true O&amp;D: ANC→SEA→JFK is two segments.</p>
 
   <h2 id="expansion-rank">Expansion rank vs <code>EXPANSION_RANK</code></h2>
   <ul>
@@ -76,7 +76,7 @@
 
   <h2 id="ranker">Ranker and congestion</h2>
   <p>Shared ranks (3, 3, 5); leftover ties by ICAO ascending. Deterministic.</p>
-  <p>Congestion compare has no fake single score. Payload: <code>delay_pct</code>, <code>avg_arrival_delay_min</code>, <code>cancel_pct</code>, <code>ops_per_runway</code>, <code>live_faa_status</code>, <code>constraint_type</code>, <code>winner_on_each_axis</code>.</p>
+  <p>Congestion compare has no fake single score. Payload: <code>delay_pct</code>, <code>avg_arrival_delay_min</code>, <code>cancel_pct</code>, <code>ops_per_runway</code>, <code>live_faa_status</code>, <code>constraint_type</code>, <code>curfew</code>, <code>winner_on_each_axis</code>.</p>
 
   <h2 id="worked">Worked waterfall (illustrative BDL)</h2>
   <p>Shape from the architecture contract. Live ranks come from the warehouse via the workbench, not from this example.</p>
