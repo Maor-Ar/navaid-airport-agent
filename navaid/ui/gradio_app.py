@@ -309,7 +309,6 @@ def build_app():
                 chatbot = gr.Chatbot(
                     label="Conversation",
                     height=420,
-                    type="messages",
                     placeholder="Ask about expansion rank, congestion, long-haul, or unmet demand.",
                     feedback_options=None,
                 )
