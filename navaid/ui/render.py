@@ -5,7 +5,13 @@ from __future__ import annotations
 import html
 from typing import Any
 
-from navaid.schemas import Answer, Envelope, ScoringTrace
+from navaid.schemas import (
+    Answer,
+    Envelope,
+    ScoringTrace,
+    constraint_explanation_for,
+    constraint_key,
+)
 from navaid.scoring.weights import FEATURE_ORDER
 
 CONSTRAINT_COLORS = {
@@ -25,7 +31,24 @@ WATERFALL_STAGES = (
     "rank",
 )
 
+_CONSTRAINT_ORDER = ("landside", "mixed", "airside", "demand-bound")
+
 _PCT_KEYS = {"delay_pct", "cancel_pct", "yoy", "lf", "load_factor"}
+
+
+def _constraint_why_html(text: str) -> str:
+    if not text:
+        return ""
+    return f'<p class="navaid-constraint-why">{_esc(text)}</p>'
+
+
+def _unique_constraint_explanations(types: list[Any]) -> list[str]:
+    present = {constraint_key(item) for item in types if item}
+    return [
+        constraint_explanation_for(key)
+        for key in _CONSTRAINT_ORDER
+        if key in present and constraint_explanation_for(key)
+    ]
 
 
 def _esc(value: Any) -> str:
@@ -127,21 +150,11 @@ def envelope_markdown(envelope: Envelope | None) -> str:
 
 def chat_reply(answer: Answer) -> str:
     parts: list[str] = []
-    if answer.reconstructed_query:
-        parts.append(f"**Reconstructed:** {answer.reconstructed_query}")
-    if answer.reconstruction_notes:
-        parts.append(f"_{answer.reconstruction_notes}_")
-    if answer.subgoals:
-        labels = ", ".join(
-            f"{sg.intent.value} ({', '.join(sg.entities) or '—'}; {sg.status.value})"
-            for sg in answer.subgoals
-        )
-        parts.append(f"**Subgoals:** {labels}")
     for section in answer.sections:
         heading = section.heading or "Answer"
         parts.append(f"### {heading}\n{section.body}")
     if answer.unsupported_parts:
-        lines = ["### Unsupported"]
+        lines = ["### Out of scope"]
         for part in answer.unsupported_parts:
             lines.append(f"- {part.text}: {part.reason}")
         parts.append("\n".join(lines))
@@ -207,12 +220,14 @@ def ranking_badges_html(answer: Answer) -> str:
         )
     extra = _other_tables_markdown(answer)
     extra_html = f"<p>{_esc(extra)}</p>" if extra else ""
+    present_types = [str(row[4]) for row in rows if len(row) > 4]
+    why_html = "".join(_constraint_why_html(text) for text in _unique_constraint_explanations(present_types))
     return (
         '<div class="navaid-rank-chips">'
         + " ".join(chips)
         + "</div>"
-        + f"<p class='navaid-muted'>Columns: {', '.join(headers)}. "
-        "Landside = terminal capex can unlock throughput; airside = slots/curfew/runway bind.</p>"
+        + f"<p class='navaid-muted'>Columns: {', '.join(headers)}.</p>"
+        + why_html
         + extra_html
     )
 
@@ -229,10 +244,13 @@ def _other_tables_markdown(answer: Answer) -> str:
         )
     longhaul = answer.tables.get("longhaul")
     if isinstance(longhaul, dict) and longhaul:
+        flight = longhaul.get("pct_longhaul_flights")
+        pax = longhaul.get("pct_longhaul")
         chunks.append(
             "Long-haul "
-            f"{longhaul.get('airport')}: {_fmt(longhaul.get('pct_longhaul'), percent=True)} "
-            f"of passengers > {longhaul.get('threshold_km') or 4000} km"
+            f"{longhaul.get('airport')}: "
+            f"flights {_fmt(flight, digits=2)}%, passengers {_fmt(pax, digits=2)}% "
+            f"> {longhaul.get('threshold_km') or 4000} km"
         )
     return "\n".join(chunks)
 
@@ -275,10 +293,17 @@ def _one_waterfall(trace: ScoringTrace, *, peer_count: int) -> str:
         f"Peer set ({peer_count} scored): {', '.join(trace.peer_set)}",
         f"Waterfall: {stages}",
         f"Constraint: **{trace.constraint_type}** × {_fmt(trace.constraint_multiplier, digits=2)}",
-        "",
-        "| Feature | Raw | Scaled 0–1 | Weight original | Weight used | Contribution |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
+    why = constraint_explanation_for(trace.constraint_type)
+    if why:
+        lines.append(why)
+    lines.extend(
+        [
+            "",
+            "| Feature | Raw | Scaled 0–1 | Weight original | Weight used | Contribution |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     features = list(FEATURE_ORDER)
     extra: list[str] = []
     seen = set(features)
@@ -340,10 +365,12 @@ def _one_waterfall_html(trace: ScoringTrace) -> str:
             f"<span>{_esc(_fmt(contrib, digits=2))}</span></div>"
         )
     badge = constraint_badge(str(trace.constraint_type), multiplier=trace.constraint_multiplier)
+    why = constraint_explanation_for(trace.constraint_type)
     return f"""
 <div class="navaid-waterfall">
   <h3>{_esc(trace.airport)} {badge} rank {_esc(trace.rank)} · TEOI {_esc(_fmt(trace.teoi, digits=1))}</h3>
   <p class="navaid-muted">raw → scaled 0–1 → weights → contributions → multiplier → score → rank</p>
+  {_constraint_why_html(why)}
   {''.join(bars)}
   <p>Weighted sum {_esc(_fmt(trace.weighted_sum, digits=2))}
      × {_esc(_fmt(trace.constraint_multiplier, digits=2))}
@@ -383,6 +410,7 @@ def compare_markdown(answer: Answer) -> str:
         ("ops_per_runway", "Ops per runway", False),
         ("live_faa_status", "Live FAA status", False),
         ("constraint_type", "Constraint", False),
+        ("curfew", "Curfew / policy", False),
     ]
     header = "| Axis | " + " | ".join(airports) + " | Winner |"
     sep = "| --- | " + " | ".join(["---"] * len(airports)) + " | --- |"
@@ -394,9 +422,7 @@ def compare_markdown(answer: Answer) -> str:
             if not isinstance(row, dict):
                 row = {}
             value = row.get(key)
-            if key == "constraint_type":
-                cells.append(str(value or "—"))
-            elif key == "live_faa_status":
+            if key in {"constraint_type", "live_faa_status", "curfew"}:
                 cells.append(str(value or "—"))
             else:
                 cells.append(_fmt(value, percent=is_pct, digits=2))
@@ -404,6 +430,13 @@ def compare_markdown(answer: Answer) -> str:
         lines.append(f"| {label} | " + " | ".join(cells) + f" | {winner or '—'} |")
     lines.append("")
     lines.append("Constraint badge: airside (SNA-style curfew/slots) vs landside (terminal can help).")
+    present_types: list[Any] = []
+    if isinstance(metrics, dict):
+        for row in metrics.values():
+            if isinstance(row, dict) and row.get("constraint_type"):
+                present_types.append(row.get("constraint_type"))
+    for why in _unique_constraint_explanations(present_types):
+        lines.append(why)
     if len(airports) >= 2:
         a, b = airports[0], airports[1]
         a_row = metrics.get(a) if isinstance(metrics.get(a), dict) else {}

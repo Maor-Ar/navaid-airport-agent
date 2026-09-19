@@ -6,11 +6,12 @@ This module is the scoring-package import path referenced by the architecture do
 
 from __future__ import annotations
 
-from navaid.config import CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
+from navaid.config import CONSTRAINT_EXPLANATIONS, CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
 
 FEATURE_ORDER: tuple[str, ...] = tuple(TEOI_WEIGHTS.keys())
 
 __all__ = [
+    "CONSTRAINT_EXPLANATIONS",
     "CONSTRAINT_MULTIPLIERS",
     "FEATURE_ORDER",
     "TEOI_WEIGHTS",

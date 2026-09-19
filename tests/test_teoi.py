@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from navaid.config import CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
+from navaid.config import CONSTRAINT_EXPLANATIONS, CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
 from navaid.schemas import Confidence, ConstraintType, ScoringTrace
 from navaid.scoring import drop_and_renormalize, rank_expansion, score_teoi
 from navaid.scoring.weights import FEATURE_ORDER
@@ -25,6 +25,19 @@ def _base_features(**overrides: float | None) -> dict[str, float | None]:
 def test_teoi_weights_sum_to_one() -> None:
     assert abs(sum(TEOI_WEIGHTS.values()) - 1.0) < 1e-12
     assert FEATURE_ORDER == tuple(TEOI_WEIGHTS.keys())
+
+
+def test_constraint_explanations_cover_multipliers() -> None:
+    assert set(CONSTRAINT_EXPLANATIONS) == set(CONSTRAINT_MULTIPLIERS)
+    landside = CONSTRAINT_EXPLANATIONS["landside"]
+    mixed = CONSTRAINT_EXPLANATIONS["mixed"]
+    airside = CONSTRAINT_EXPLANATIONS["airside"]
+    demand = CONSTRAINT_EXPLANATIONS["demand-bound"]
+    assert "1.00" in landside and "terminal capex can unlock capacity" in landside
+    assert "0.75" in mixed and "landside and airside both bind" in mixed
+    assert "partially unlocks capacity" in mixed
+    assert "0.40" in airside and "more terminal does not create slots" in airside
+    assert "0.30" in demand and "expansion is speculative" in demand
 
 
 def test_drop_and_renormalize_capital_feasibility() -> None:

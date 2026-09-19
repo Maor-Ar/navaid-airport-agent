@@ -25,8 +25,10 @@ KM_PER_STATUTE_MILE = 1.609344
 _LONGHAUL_ASSUMPTIONS = (
     f"Long-haul default is great-circle distance > {LONGHAUL_KM:.0f} km (Eurocontrol) on T-100 segments",
     "T-100 is segment traffic, not true O&D",
+    "Warehouse T-100 is a filtered commercial sample, not every cargo and connecting itinerary",
     "Cargo segments are excluded unless include_cargo=True",
     "Distances are kilometres; statute miles are a separate conversion (do not mix units)",
+    "pct_longhaul is passenger-weighted; pct_longhaul_flights is the share of counted segments",
 )
 
 _LONGHAUL_SOURCES = (
@@ -130,6 +132,7 @@ def longhaul_share(
     pax_over_6h = 0.0
     hours_weight = 0.0
     counted = 0
+    segments_longhaul = 0
     missing_distance = 0
     cargo_skipped = 0
 
@@ -149,6 +152,7 @@ def longhaul_share(
         pax_total += passengers
         if distance > cutoff:
             pax_longhaul += passengers
+            segments_longhaul += 1
         if segment.get("international") is True:
             pax_international += passengers
         hours = _segment_hours(segment)
@@ -158,8 +162,14 @@ def longhaul_share(
                 pax_over_6h += passengers
 
     pct_longhaul = (100.0 * pax_longhaul / pax_total) if pax_total else 0.0
+    pct_longhaul_flights = (100.0 * segments_longhaul / counted) if counted else 0.0
     pct_international = (100.0 * pax_international / pax_total) if pax_total else 0.0
     pct_over_6h = (100.0 * pax_over_6h / hours_weight) if hours_weight else None
+    anc_jfk_km = None
+    anc_jfk_mi = None
+    if code == "ANC":
+        anc_jfk_km = great_circle_km(61.1744, -149.9960, 40.6398, -73.7789)
+        anc_jfk_mi = km_to_statute_miles(anc_jfk_km)
 
     uncertainties: list[str] = []
     if cargo_skipped and not include_cargo:
@@ -187,9 +197,13 @@ def longhaul_share(
         passengers_total=pax_total,
         passengers_longhaul=pax_longhaul,
         pct_longhaul=pct_longhaul,
+        pct_longhaul_flights=pct_longhaul_flights,
         pct_international=pct_international,
         pct_over_6h=pct_over_6h,
         segments_counted=counted,
+        segments_longhaul=segments_longhaul,
         cargo_excluded=not include_cargo,
+        anc_jfk_km=anc_jfk_km,
+        anc_jfk_mi=anc_jfk_mi,
         envelope=envelope,
     )

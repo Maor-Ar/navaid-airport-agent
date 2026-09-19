@@ -88,6 +88,11 @@ def _metrics_for(row: Mapping[str, Any]) -> CongestionMetrics:
             else None
         ),
         constraint_type=_constraint(row),
+        curfew=(
+            str(row["curfew"]).strip()
+            if row.get("curfew") not in (None, "")
+            else None
+        ),
     )
 
 

@@ -9,6 +9,7 @@ from navaid.agent.entities import extract_airports, is_new_england, resolve_one
 from navaid.agent.jsonutil import jsonable
 from navaid.agent.sessions import SessionMemory
 from navaid.config import LONGHAUL_KM, NAVAID_OFFLINE, NEW_ENGLAND_IATA
+from navaid.schemas import constraint_explanation_for, constraint_key, constraint_multiplier_for
 from navaid.net.errors import CircuitOpenError, NavaidNetworkError, OfflineNetworkError
 from navaid.net.faa_live import live_status_for
 from navaid.rag.search import search_corpus as rag_search_corpus
@@ -26,6 +27,7 @@ TOOL_NAMES = (
     "unmet_demand",
     "airport_metrics",
     "explain_teoi",
+    "explain_constraint",
     "search_corpus",
     "get_live_status",
 )
@@ -143,6 +145,43 @@ def airport_metrics(ctx: ToolContext, airport: str) -> dict[str, Any]:
     return jsonable(row)
 
 
+def explain_constraint(ctx: ToolContext, airport: str) -> dict[str, Any]:
+    """Curated constraint label plus the warehouse figures that support it."""
+
+    code = airport.strip().upper()
+    row = ctx.catalog.base_metrics(code)
+    constraint = constraint_key(row.get("constraint_type"))
+    multiplier = None
+    try:
+        multiplier = constraint_multiplier_for(constraint) if constraint else None
+    except KeyError:
+        multiplier = None
+    return jsonable(
+        {
+            "airport": code,
+            "iata": code,
+            "name": row.get("name"),
+            "constraint_type": constraint or row.get("constraint_type"),
+            "constraint_multiplier": multiplier,
+            "constraint_explanation": constraint_explanation_for(constraint),
+            "constraint_notes": row.get("constraint_notes"),
+            "curfew": row.get("curfew"),
+            "gate_count": row.get("gate_count"),
+            "pax_per_gate": row.get("pax_per_gate"),
+            "delay_pct": row.get("delay_pct"),
+            "avg_arrival_delay_min": row.get("avg_arrival_delay_min"),
+            "load_factor": row.get("load_factor") or row.get("lf"),
+            "ops_per_runway": row.get("ops_per_runway"),
+            "enplanements": row.get("enplanements"),
+            "source": "curated constraints table plus warehouse metrics",
+            "note": (
+                "Constraint type is a curated classifier label. "
+                "The multiplier is a later TEOI haircut, not the reason for the label."
+            ),
+        }
+    )
+
+
 def explain_teoi(
     ctx: ToolContext,
     airports: list[str] | str | None = None,
@@ -249,6 +288,7 @@ DISPATCH: dict[str, Callable[..., dict[str, Any]]] = {
         ranks=kw.get("ranks"),
         reuse_session=bool(kw.get("reuse_session", True)),
     ),
+    "explain_constraint": lambda ctx, **kw: explain_constraint(ctx, airport=kw["airport"]),
     "search_corpus": lambda ctx, **kw: search_corpus(
         ctx, query=kw.get("query") or "", airport=kw.get("airport")
     ),
@@ -269,6 +309,8 @@ def plan_tools_for_subgoal(intent: str, entities: list[str], notes: str = "") ->
     """Deterministic tool plan so every subgoal runs even if Gemini is silent."""
 
     codes = [c.upper() for c in entities]
+    if intent in {"CHITCHAT", "CAPABILITIES", "UNSUPPORTED"}:
+        return []
     if intent == "EXPANSION_RANK":
         args: dict[str, Any] = {}
         if codes:
@@ -285,18 +327,24 @@ def plan_tools_for_subgoal(intent: str, entities: list[str], notes: str = "") ->
                 "longhaul_share",
                 {
                     "airport": airport,
-                    "include_cargo": "include cargo" in notes.lower() or "cargo" in notes.lower(),
+                    "include_cargo": "include cargo" in notes.lower(),
                 },
             )
         ]
     if intent == "UNMET_DEMAND":
         return [("unmet_demand", {"airport": codes[0] if codes else "SFO"})]
     if intent == "AIRPORT_BRIEF":
+        if "glossary faq" in notes.lower():
+            query = notes.split(":", 1)[-1].strip() or "TEOI landside T-100 leakage"
+            return [("search_corpus", {"query": query})]
         airport = codes[0] if codes else "BOS"
         return [("airport_metrics", {"airport": airport}), ("search_corpus", {"query": airport, "airport": airport})]
     if intent == "EXPLAIN_TEOI":
         ranks = None
         return [("explain_teoi", {"airports": codes or None, "ranks": ranks, "reuse_session": True})]
+    if intent == "EXPLAIN_CONSTRAINT":
+        airport = codes[0] if codes else "BOS"
+        return [("explain_constraint", {"airport": airport})]
     return []
 
 
@@ -335,7 +383,7 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     },
     {
         "name": "longhaul_share",
-        "description": "T-100 long-haul passenger share. Default threshold 4000 km. Cargo out unless include_cargo.",
+        "description": "T-100 long-haul passenger and flight share. Default 4000 km. Cargo is excluded unless the user explicitly asked to include cargo.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -377,6 +425,19 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "explain_constraint",
+        "description": (
+            "Why one airport is labeled landside / mixed / airside / demand-bound. "
+            "Returns the curated classifier label, notes, multiplier, and supporting metrics. "
+            "Do not dump TEOI traces or re-rank."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {"airport": {"type": "string"}},
+            "required": ["airport"],
+        },
+    },
+    {
         "name": "search_corpus",
         "description": "Search airport-keyed notes via DuckDB FTS. RAG never ranks. T-100 wins facts.",
         "parameters": {
@@ -408,6 +469,7 @@ __all__ = [
     "airport_metrics",
     "call_tool",
     "compare_congestion",
+    "explain_constraint",
     "explain_teoi",
     "extract_airports",
     "get_live_status",

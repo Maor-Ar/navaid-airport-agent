@@ -67,6 +67,7 @@ CSS = """
 .navaid-rank-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
 .navaid-rank-chip { display: inline-flex; align-items: center; gap: 6px; }
 .navaid-muted { color: #64748b; font-size: 13px; }
+.navaid-constraint-why { color: #1e293b; font-size: 13px; line-height: 1.45; border-left: 3px solid #1e3a5f; padding: 6px 10px; background: #f8fafc; margin: 8px 0; }
 .navaid-waterfall .navaid-bar-row { display: grid; grid-template-columns: 10rem 1fr 3.5rem; gap: 8px; align-items: center; margin: 4px 0; font-size: 13px; }
 .navaid-bar-track { background: #e2e8f0; border-radius: 6px; height: 10px; overflow: hidden; }
 .navaid-bar-track.dropped { background: repeating-linear-gradient(-45deg, #e2e8f0, #e2e8f0 4px, #cbd5e1 4px, #cbd5e1 8px); }

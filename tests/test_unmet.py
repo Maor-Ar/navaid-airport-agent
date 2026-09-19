@@ -101,3 +101,5 @@ def test_same_cbsa_leakage_only_when_lf_high() -> None:
     )
     assert quiet.leakage == 0.0
     assert quiet.leakage_peers == []
+    assert quiet.leakage_gated is True
+    assert any("seat-pressure" in note for note in quiet.envelope.uncertainties)

@@ -32,6 +32,7 @@ class UnmetResult(LockedModel):
     taf_gap: float | None
     leakage: float
     leakage_peers: list[str]
+    leakage_gated: bool = False
     unmet: float
     envelope: Envelope
 
@@ -43,10 +44,14 @@ class LonghaulResult(LockedModel):
     passengers_total: float
     passengers_longhaul: float
     pct_longhaul: float
+    pct_longhaul_flights: float = 0.0
     pct_international: float
     pct_over_6h: float | None
     segments_counted: int
+    segments_longhaul: int = 0
     cargo_excluded: bool
+    anc_jfk_km: float | None = None
+    anc_jfk_mi: float | None = None
     envelope: Envelope
 
 
@@ -57,6 +62,7 @@ class CongestionMetrics(LockedModel):
     ops_per_runway: float | None = None
     live_faa_status: str | None = None
     constraint_type: ConstraintType | None = None
+    curfew: str | None = None
 
 
 class CongestionResult(LockedModel):

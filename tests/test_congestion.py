@@ -28,6 +28,7 @@ def test_typed_payload_no_fake_score() -> None:
                 "runway_count": 2,
                 "live_faa_status": "normal",
                 "constraint_type": "airside",
+                "curfew": "22:00–07:00",
             },
         ],
         as_of=date(2024, 12, 31),
@@ -46,6 +47,7 @@ def test_typed_payload_no_fake_score() -> None:
     }
     assert result.metrics["LAX"].delay_pct == 0.25
     assert result.metrics["SNA"].ops_per_runway == 150_000
+    assert result.metrics["SNA"].curfew == "22:00–07:00"
     assert result.winner_on_each_axis["delay_pct"] == "LAX"
     assert result.winner_on_each_axis["avg_arrival_delay_min"] == "LAX"
     assert result.winner_on_each_axis["cancel_pct"] == "LAX"

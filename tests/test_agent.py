@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from navaid.agent.entities import resolve_one
 from navaid.agent.orchestrator import ask
 from navaid.agent.sessions import new_session_id
@@ -124,3 +126,131 @@ def test_why_bos_followup_reuses_new_england_teoi() -> None:
     assert abs(float(bos2.teoi) - float(bos.teoi)) < 1e-6
     assert bos2.teoi > 50
     assert "do not re-rank" in second.reconstructed_query.lower() or second.reconstruction_notes
+
+
+def test_buy_aal_after_sfo_does_not_brief_sfo() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    sid = new_session_id()
+    ask(
+        "What is the unmet flight demand in SFO airport and why?",
+        session_id=sid,
+        use_gemini=False,
+    )
+    second = ask("Should I buy AAL?", session_id=sid, use_gemini=False)
+    intents = [sg.intent for sg in second.subgoals]
+    assert Intent.UNSUPPORTED in intents
+    assert Intent.AIRPORT_BRIEF not in intents
+    assert Intent.UNMET_DEMAND not in intents
+    blob = " ".join(section.body for section in second.sections).lower()
+    assert "out of scope" in blob or second.unsupported_parts
+    assert "enplanements" not in blob
+
+
+def test_hello_and_capabilities_skip_engines() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    hello = ask("hello", session_id=new_session_id(), use_gemini=False)
+    assert [sg.intent for sg in hello.subgoals] == [Intent.CHITCHAT]
+    assert hello.process == []
+    assert hello.map_points == []
+    assert not hello.teoi_traces
+    assert not any(s.name == "tool" for s in hello.steps)
+    hello_blob = " ".join(section.body for section in hello.sections).lower()
+    assert "enplanements" not in hello_blob
+    assert "206" not in hello_blob
+    assert "rank" in hello_blob or "expansion" in hello_blob
+
+    caps = ask("what can you do", session_id=new_session_id(), use_gemini=False)
+    assert [sg.intent for sg in caps.subgoals] == [Intent.CAPABILITIES]
+    assert caps.process == []
+    assert caps.map_points == []
+    assert not caps.teoi_traces
+    assert not any(s.name == "tool" for s in caps.steps)
+    blob = " ".join(section.body for section in caps.sections).lower()
+    assert "enplanements" not in blob
+    assert "pax/gate" not in blob and "pax per gate" not in blob
+    assert "warehouse snapshot" not in blob
+    assert "stocks" in blob or "ticker" in blob or "npv" in blob
+    assert "new england" in blob or "sfo" in blob
+
+
+def test_why_bos_mixed_after_new_england_rank() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    sid = new_session_id()
+    first = ask(
+        "Which airports in New England are strong candidates for terminal expansion?",
+        session_id=sid,
+        use_gemini=False,
+    )
+    assert any(sg.intent == Intent.EXPANSION_RANK for sg in first.subgoals)
+    second = ask("why is BOS mixed?", session_id=sid, use_gemini=False)
+    intents = [sg.intent for sg in second.subgoals]
+    assert Intent.EXPLAIN_CONSTRAINT in intents
+    assert Intent.EXPLAIN_TEOI not in intents
+    assert Intent.EXPANSION_RANK not in intents
+    blob = " ".join(section.body for section in second.sections)
+    lower = blob.lower()
+    assert "mixed" in lower
+    assert "landside" in lower and "airside" in lower
+    assert "demand_pressure" not in lower
+    assert "pax_per_gate" not in blob
+    assert "scaled_0_1" not in lower
+    peers = ["BDL", "BGR", "BTV", "MHT", "ORH", "PVD", "PWM"]
+    assert not all(code in blob for code in peers)
+    assert "0.75" in blob or "haircut" in lower
+    assert "explain teoi traces" not in second.reconstructed_query.lower()
+
+
+def test_capabilities_after_lax_sna_congestion() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    sid = new_session_id()
+    first = ask(
+        "Compare LA and Santa Ana airport congestion levels.",
+        session_id=sid,
+        use_gemini=False,
+    )
+    assert any(sg.intent == Intent.CONGESTION_COMPARE for sg in first.subgoals)
+    first_blob = " ".join(section.body for section in first.sections)
+    assert "delay_pct" not in first_blob
+    assert "avg_arrival_delay_min" not in first_blob
+    assert "ops_per_runway" not in first_blob
+    assert "avgarrivaldelay" not in first_blob.replace("_", "").replace(" ", "").lower()
+    assert "opsperrunway" not in first_blob.replace("_", "").replace(" ", "").lower()
+    assert not re.search(r"\d+\.\d{4,}", first_blob)
+    assert "curfew" in first_blob.lower() or "airside" in first_blob.lower()
+    assert "single congestion score" in first_blob.lower() or "no single" in first_blob.lower()
+
+    second = ask("what can you do?", session_id=sid, use_gemini=False)
+    intents = [sg.intent for sg in second.subgoals]
+    assert intents == [Intent.CAPABILITIES]
+    assert Intent.AIRPORT_BRIEF not in intents
+    assert "airports:" not in second.reconstructed_query.lower()
+    assert "LAX" not in second.reconstructed_query
+    assert "SNA" not in second.reconstructed_query
+    assert second.process == []
+    assert second.map_points == []
+    assert not second.citations
+    assert not any(s.name == "tool" for s in second.steps)
+    blob = " ".join(section.body for section in second.sections).lower()
+    assert "enplanements" not in blob
+    assert "pax/gate" not in blob and "pax per gate" not in blob
+    assert "warehouse snapshot" not in blob
+    assert "stocks" in blob or "ticker" in blob or "npv" in blob
+
+
+def test_sample_queries_fill_process_and_map_points() -> None:
+    if not WAREHOUSE_PATH.is_file():
+        build_snapshot(offline=True, force_fixtures=True)
+    rank = ask(
+        "Which airports in New England are strong candidates for terminal expansion?",
+        session_id=new_session_id(),
+        use_gemini=False,
+    )
+    assert any(sg.intent == Intent.EXPANSION_RANK for sg in rank.subgoals)
+    assert rank.process
+    assert {ev.kind for ev in rank.process} >= {"thought", "tool", "result"}
+    assert any(p.iata == "BOS" for p in rank.map_points)
+    assert all(p.lat is not None and p.lon is not None for p in rank.map_points)

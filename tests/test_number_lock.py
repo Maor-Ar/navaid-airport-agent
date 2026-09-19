@@ -33,3 +33,11 @@ def test_lock_strips_invented_numbers() -> None:
     assert "18" in stripped or "18%" in stripped
     assert "99.4" not in locked
     assert "120000" in locked or "120,000" in locked
+
+
+def test_lock_allows_ten_year_prose() -> None:
+    locked, stripped = lock_prose("TAF 10-year forecast gap on a 100-point TEOI.", {"airport": "SFO"})
+    assert "10" not in stripped
+    assert "100" not in stripped
+    assert "10-year" in locked
+

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from navaid.config import CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
+from navaid.config import CONSTRAINT_EXPLANATIONS, CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
 from navaid.schemas import (
     Answer,
     Citation,
@@ -28,6 +28,7 @@ from navaid.ui.render import (
     ranking_badges_html,
     ranking_frame,
     steps_markdown,
+    waterfall_html,
     waterfall_markdown,
 )
 from navaid.ui.voice import STT_FALLBACK, transcribe
@@ -197,6 +198,8 @@ def test_render_envelope_steps_ranking_waterfall_compare_citations() -> None:
     badges = ranking_badges_html(answer)
     assert "landside" in badges.lower()
     assert "BDL" in badges
+    assert CONSTRAINT_EXPLANATIONS["landside"] in badges
+    assert "navaid-constraint-why" in badges
 
     water = waterfall_markdown(answer.teoi_traces, "BDL")
     for stage in WATERFALL_STAGES:
@@ -209,19 +212,27 @@ def test_render_envelope_steps_ranking_waterfall_compare_citations() -> None:
     assert "rank" in water.lower()
     assert "BDL" in water
     assert str(answer.teoi_traces[0].rank) in water
+    assert CONSTRAINT_EXPLANATIONS["landside"] in water
+
+    html_water = waterfall_html(answer.teoi_traces, "BDL")
+    assert CONSTRAINT_EXPLANATIONS["landside"] in html_water
+    assert "navaid-constraint-why" in html_water
 
     compare = compare_markdown(answer)
     assert "LAX" in compare and "SNA" in compare
     assert "constraint" in compare.lower()
     assert "no composite" in compare.lower() or "no composite congestion" in compare.lower() or "No composite" in compare
+    assert CONSTRAINT_EXPLANATIONS["mixed"] in compare
+    assert CONSTRAINT_EXPLANATIONS["airside"] in compare
 
     cites = citations_markdown(answer)
     assert "FAA CY passenger boardings" in cites
 
     reply = chat_reply(answer)
-    assert "Reconstructed" in reply
     assert "buy AAL" in reply
     assert "landside" in reply.lower() or "BDL" in reply
+    assert "Reconstructed" not in reply
+    assert "EXPANSION_RANK" not in reply
 
 
 def test_eval_summary_stub_and_voice_fallback(monkeypatch) -> None:

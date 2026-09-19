@@ -150,9 +150,15 @@ def unmet_demand(
     uncertainties = list(leak_notes)
     missing_optional = False
     missing_required = lf is None
+    leakage_gated = lf is not None and lf < threshold
     if lf is None:
         uncertainties.append("load factor missing; load-factor gap omitted")
         missing_optional = True
+    if leakage_gated:
+        uncertainties.append(
+            f"load factor is below the {threshold:.0%} seat-pressure rule; "
+            "same-metro leakage is qualitative, not in the unmet number"
+        )
     if taf is None:
         uncertainties.append("TAF 10-year forecast missing; forecast gap omitted")
         missing_optional = True
@@ -178,6 +184,7 @@ def unmet_demand(
         taf_gap=taf_gap,
         leakage=leakage,
         leakage_peers=leakage_peers,
+        leakage_gated=leakage_gated,
         unmet=unmet,
         envelope=envelope,
     )

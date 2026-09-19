@@ -64,8 +64,12 @@ def _forms_from_token(token: str) -> set[str]:
     return forms
 
 
+# Ordinary English quantities that are not engine inventions (10-year TAF, 100-point TEOI).
+_PROSE_INTEGERS = {"10", "100", "90", "4000", "5420", "3370"}
+
+
 def collect_allowed_numbers(payloads: Any) -> set[str]:
-    allowed: set[str] = set()
+    allowed: set[str] = set(_PROSE_INTEGERS)
 
     def walk(node: Any) -> None:
         if isinstance(node, bool):
@@ -89,6 +93,7 @@ def collect_allowed_numbers(payloads: Any) -> set[str]:
                 walk(value)
 
     walk(jsonable(payloads))
+    walk(jsonable(payloads, round_floats=True))
     return allowed
 
 

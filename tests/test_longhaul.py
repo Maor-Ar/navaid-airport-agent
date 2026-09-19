@@ -38,6 +38,9 @@ def test_default_threshold_is_4000_km() -> None:
     assert result.passengers_total == 200
     assert result.passengers_longhaul == 100
     assert result.pct_longhaul == 50.0
+    assert abs(result.pct_longhaul_flights - (100.0 * 2 / 3)) < 1e-9
+    assert result.segments_longhaul == 2
+    assert result.segments_counted == 3
     assert result.pct_international == 25.0
     assert result.pct_over_6h is None
     assert result.cargo_excluded is True
