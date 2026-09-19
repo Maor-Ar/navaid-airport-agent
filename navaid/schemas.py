@@ -12,7 +12,7 @@ from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from navaid.config import CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
+from navaid.config import CONSTRAINT_EXPLANATIONS, CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
 
 
 class LockedModel(BaseModel):
@@ -41,7 +41,10 @@ class Intent(StrEnum):
     UNMET_DEMAND = "UNMET_DEMAND"
     AIRPORT_BRIEF = "AIRPORT_BRIEF"
     EXPLAIN_TEOI = "EXPLAIN_TEOI"
+    EXPLAIN_CONSTRAINT = "EXPLAIN_CONSTRAINT"
     FOLLOW_UP = "FOLLOW_UP"
+    CHITCHAT = "CHITCHAT"
+    CAPABILITIES = "CAPABILITIES"
     UNSUPPORTED = "UNSUPPORTED"
 
 
@@ -166,6 +169,44 @@ class UnsupportedPart(LockedModel):
     subgoal_index: int | None = None
 
 
+class ProcessEvent(LockedModel):
+    """One live working beat shown before the final answer (thought / tool / result)."""
+
+    kind: str = Field(..., description="thought | tool | result")
+    title: str = ""
+    detail: str = ""
+
+    @field_validator("kind")
+    @classmethod
+    def _known_kind(cls, value: str) -> str:
+        key = (value or "").strip().lower()
+        if key not in {"thought", "tool", "result"}:
+            raise ValueError(f"unknown process kind: {value!r}")
+        return key
+
+
+class MapPoint(LockedModel):
+    """One airport marker for the workbench map sidebar."""
+
+    iata: str
+    name: str = ""
+    lat: float
+    lon: float
+    role: str = ""
+    enplanements: float | None = None
+    constraint: str | None = None
+    teoi: float | None = None
+    highlight: bool = False
+    load_factor: float | None = None
+    delay_pct: float | None = None
+    why: str = ""
+
+    @field_validator("iata")
+    @classmethod
+    def _iata_upper(cls, value: str) -> str:
+        return value.strip().upper()
+
+
 class Answer(LockedModel):
     """Canonical `/ask` payload shared by CLI, FastAPI, Gradio, and the site."""
 
@@ -173,9 +214,11 @@ class Answer(LockedModel):
     reconstruction_notes: str = ""
     subgoals: list[Subgoal] = Field(default_factory=list)
     steps: list[Step] = Field(default_factory=list)
+    process: list[ProcessEvent] = Field(default_factory=list)
     sections: list[Section] = Field(default_factory=list)
     teoi_traces: list[ScoringTrace] = Field(default_factory=list)
     tables: dict[str, Any] = Field(default_factory=dict)
+    map_points: list[MapPoint] = Field(default_factory=list)
     envelope: Envelope
     citations: list[Citation] = Field(default_factory=list)
     unsupported_parts: list[UnsupportedPart] = Field(default_factory=list)
@@ -191,6 +234,24 @@ def constraint_multiplier_for(constraint_type: ConstraintType | str) -> float:
         raise KeyError(f"unknown constraint_type: {constraint_type!r}") from exc
 
 
+def constraint_key(constraint_type: ConstraintType | str | None) -> str:
+    """Normalize MIXED / Demand-bound / demand_bound to the canonical key."""
+
+    return (
+        str(constraint_type or "")
+        .strip()
+        .lower()
+        .replace("_", "-")
+        .replace(" ", "-")
+    )
+
+
+def constraint_explanation_for(constraint_type: ConstraintType | str | None) -> str:
+    """Glossary why-text for a constraint class; empty if unknown or missing."""
+
+    return CONSTRAINT_EXPLANATIONS.get(constraint_key(constraint_type), "")
+
+
 __all__ = [
     "Answer",
     "Citation",
@@ -198,11 +259,15 @@ __all__ = [
     "ConstraintType",
     "Envelope",
     "Intent",
+    "MapPoint",
+    "ProcessEvent",
     "ScoringTrace",
     "Section",
     "Step",
     "Subgoal",
     "SubgoalStatus",
     "UnsupportedPart",
+    "constraint_explanation_for",
+    "constraint_key",
     "constraint_multiplier_for",
 ]

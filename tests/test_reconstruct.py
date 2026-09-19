@@ -25,9 +25,9 @@ def _session_after_rank() -> SessionMemory:
         entities=["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"],
         peer_set=["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"],
         traces=[
-            {"airport": "BOS", "rank": 1, "teoi": 69.77, "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
-            {"airport": "BDL", "rank": 2, "teoi": 61.2, "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
-            {"airport": "PVD", "rank": 3, "teoi": 55.0, "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
+            {"airport": "BOS", "rank": 1, "teoi": 69.77, "constraint_type": "mixed", "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
+            {"airport": "BDL", "rank": 2, "teoi": 61.2, "constraint_type": "landside", "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
+            {"airport": "PVD", "rank": 3, "teoi": 55.0, "constraint_type": "landside", "peer_set": ["BOS", "BDL", "PVD", "PWM", "MHT", "BTV"]},
         ],
         intent="EXPANSION_RANK",
     )
@@ -38,7 +38,7 @@ def test_first_turn_is_noop() -> None:
     rec = reconstruct("Compare LA and Santa Ana congestion", SessionMemory(session_id="empty"))
     assert rec.independent
     assert rec.reconstructed_query.startswith("Compare LA")
-    assert "no-op" in rec.notes
+    assert rec.notes == ""
 
 
 def test_those_two_from_session() -> None:
@@ -79,3 +79,71 @@ def test_add_pwm_reruns_ranker() -> None:
     assert "PWM" in rec.reconstructed_query
     assert rec.added_airports == ["PWM"]
     assert rec.filled_airports[-1] == "PWM" or "PWM" in rec.filled_airports
+
+
+def test_buy_aal_does_not_inherit_last_airports() -> None:
+    rec = reconstruct("Should I buy AAL?", _session_after_rank())
+    assert rec.independent
+    assert rec.filled_airports == []
+    assert "BOS" not in rec.reconstructed_query
+    assert rec.notes == ""
+
+
+def test_named_airport_question_is_independent() -> None:
+    rec = reconstruct("What is the unmet flight demand in SFO airport and why?", _session_after_rank())
+    assert rec.independent
+    assert rec.filled_airports == []
+    assert rec.reconstructed_query.startswith("What is the unmet")
+
+
+def test_hello_does_not_inherit_last_airports() -> None:
+    rec = reconstruct("hello", _session_after_rank())
+    assert rec.independent
+    assert rec.filled_airports == []
+    assert "BOS" not in rec.reconstructed_query
+    assert rec.notes == ""
+
+
+def test_capabilities_does_not_inherit_last_airports() -> None:
+    rec = reconstruct("what can you do", _session_after_rank())
+    assert rec.independent
+    assert rec.filled_airports == []
+    assert "BOS" not in rec.reconstructed_query
+
+
+def test_capabilities_after_congestion_does_not_copy_airports() -> None:
+    for question in ("what can you do?", "what do you do", "help", "who are you"):
+        rec = reconstruct(question, _session_after_congestion())
+        assert rec.independent, question
+        assert rec.filled_airports == []
+        assert "LAX" not in rec.reconstructed_query
+        assert "SNA" not in rec.reconstructed_query
+        assert "airports:" not in rec.reconstructed_query.lower()
+
+
+def test_hello_after_congestion_does_not_copy_airports() -> None:
+    rec = reconstruct("hello", _session_after_congestion())
+    assert rec.independent
+    assert rec.filled_airports == []
+    assert "LAX" not in rec.reconstructed_query
+
+
+def test_why_bos_mixed_is_constraint_not_teoi() -> None:
+    for question in (
+        "can you explain why and how you gave BOS the mixed constraint type?",
+        "why is BOS mixed?",
+        "explain why BOS is mixed",
+        "why mixed at BOS",
+    ):
+        rec = reconstruct(question, _session_after_rank())
+        assert rec.explain_constraint is True, question
+        assert rec.reuse_traces is False, question
+        assert rec.rerun_ranker is False, question
+        assert "BOS" in rec.reconstructed_query
+        assert "mixed" in rec.reconstructed_query.lower()
+        assert "Explain TEOI traces" not in rec.reconstructed_query
+        assert "do not re-rank a singleton" not in rec.reconstructed_query.lower()
+        assert rec.filled_airports == ["BOS"]
+        peer = ["BDL", "BGR", "BTV", "MHT", "ORH", "PVD", "PWM"]
+        blob = rec.reconstructed_query
+        assert not all(code in blob for code in peer), question

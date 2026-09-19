@@ -103,8 +103,33 @@ CONSTRAINT_MULTIPLIERS: MappingProxyType[str, float] = MappingProxyType(
     }
 )
 
+# Plain-language why for each multiplier. Workbench JS duplicates these strings.
+CONSTRAINT_EXPLANATIONS: MappingProxyType[str, str] = MappingProxyType(
+    {
+        "landside": (
+            "Landside is the building: gates, holdrooms, security, bag claim, curb. "
+            "TEOI is scaled by 1.00 because terminal capex can unlock capacity."
+        ),
+        "mixed": (
+            "Mixed means landside and airside both bind. "
+            "TEOI is scaled by 0.75 because a terminal project only partially unlocks capacity."
+        ),
+        "airside": (
+            "Airside is runways, slots, weather, ATC, or a noise curfew. "
+            "TEOI is scaled by 0.40 because more terminal does not create slots."
+        ),
+        "demand-bound": (
+            "Demand-bound is a weak catchment, low load factor, or leakage already served nearby. "
+            "TEOI is scaled by 0.30 because expansion is speculative."
+        ),
+    }
+)
+
 if abs(sum(TEOI_WEIGHTS.values()) - 1.0) > 1e-12:
     raise RuntimeError("TEOI_WEIGHTS must sum to 1.0")
+
+if set(CONSTRAINT_EXPLANATIONS) != set(CONSTRAINT_MULTIPLIERS):
+    raise RuntimeError("CONSTRAINT_EXPLANATIONS keys must match CONSTRAINT_MULTIPLIERS")
 
 # --- Geography --------------------------------------------------------------
 

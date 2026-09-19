@@ -32,6 +32,39 @@ _ADD = re.compile(
 )
 _CURFEW = re.compile(r"\bcurfew|constraint[- ]type\b", re.IGNORECASE)
 _CARGO = re.compile(r"\bcargo\b", re.IGNORECASE)
+_UNSUPPORTED_FOLLOWUP = re.compile(
+    r"\b(buy|stock|ticker|equity|equities|share price|restaurant|weather in)\b|\bAAL\b",
+    re.IGNORECASE,
+)
+_AIRPORT_SUFFIX = re.compile(r"\s*\(airports:\s*[^)]*\)\s*$", re.IGNORECASE)
+_META_QUESTION = re.compile(
+    r"^\s*("
+    r"what can you do(?: for me)?"
+    r"|what do you do"
+    r"|who are you"
+    r"|what are you"
+    r"|tell me what (?:you can|can you) do"
+    r"|(?:your )?capabilities"
+    r"|help(?:\s+me)?"
+    r"|hi+|hello|hey+"
+    r"|thanks|thank you|thx"
+    r"|good (?:morning|afternoon|evening)"
+    r"|yo"
+    r")\s*[.!?]*\s*$",
+    re.IGNORECASE,
+)
+_CONSTRAINT_KIND = re.compile(
+    r"\b(?P<kind>mixed|landside|airside|demand[- ]bound)\b",
+    re.IGNORECASE,
+)
+_CONSTRAINT_TYPE_PHRASE = re.compile(
+    r"\bconstraint[- ]types?\b|\bconstraint classifier\b|\bconstraint label\b",
+    re.IGNORECASE,
+)
+_CONSTRAINT_ASK = re.compile(
+    r"\b(why|how|explain|gave|labeled|labelled|classified|classification)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -41,8 +74,44 @@ class Reconstruction:
     independent: bool
     reuse_traces: bool = False
     rerun_ranker: bool = False
+    explain_constraint: bool = False
     added_airports: list[str] = field(default_factory=list)
     filled_airports: list[str] = field(default_factory=list)
+
+
+def core_question(question: str) -> str:
+    """Strip session airport suffixes copied onto follow-ups."""
+
+    return _AIRPORT_SUFFIX.sub("", (question or "").strip()).strip()
+
+
+def is_meta_question(question: str) -> bool:
+    """Capabilities / hello / thanks / help — never inherit last airports."""
+
+    return bool(_META_QUESTION.search(core_question(question)))
+
+
+def is_constraint_explain(
+    question: str,
+    *,
+    codes: list[str] | None = None,
+    session: SessionMemory | None = None,
+) -> bool:
+    """True when the user is asking why a constraint *label* was assigned."""
+
+    q = core_question(question)
+    if not q or not _CONSTRAINT_ASK.search(q):
+        return False
+    if not (_CONSTRAINT_KIND.search(q) or _CONSTRAINT_TYPE_PHRASE.search(q)):
+        return False
+    mentioned = list(codes) if codes is not None else extract_airports(q, session=None)
+    has_context = bool(
+        mentioned
+        or (session and (session.last_entities or session.last_peer_set or session.last_traces))
+    )
+    if not has_context:
+        return False
+    return True
 
 
 def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
@@ -52,7 +121,14 @@ def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
     if session is None or not session.turns:
         return Reconstruction(
             reconstructed_query=q,
-            notes="first turn; reconstruction is a no-op",
+            notes="",
+            independent=True,
+        )
+
+    if is_meta_question(q):
+        return Reconstruction(
+            reconstructed_query=core_question(q),
+            notes="",
             independent=True,
         )
 
@@ -95,6 +171,22 @@ def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
         )
 
     codes_in_q = extract_airports(q, session=None)
+    if is_constraint_explain(q, codes=codes_in_q, session=session):
+        kind_match = _CONSTRAINT_KIND.search(q)
+        kind = (kind_match.group("kind") if kind_match else "this").lower().replace(" ", "-")
+        code = (codes_in_q[0] if codes_in_q else None) or _constraint_airport_from_session(session, kind)
+        if code:
+            return Reconstruction(
+                reconstructed_query=(
+                    f"Explain why {code} is labeled {kind} using the warehouse "
+                    "constraint classifier and supporting metrics. Do not dump TEOI traces."
+                ),
+                notes=f"constraint classifier for {code}; not a TEOI trace dump",
+                independent=False,
+                explain_constraint=True,
+                filled_airports=[code],
+            )
+
     if session.last_traces and _is_teoi_explain(q, codes_in_q, session):
         peer = [c.upper() for c in session.last_peer_set]
         codes = [c for c in codes_in_q if not peer or c in set(peer)] or codes_in_q
@@ -158,7 +250,14 @@ def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
     if new_codes and not those:
         return Reconstruction(
             reconstructed_query=q,
-            notes="independent question; reconstruction is a no-op",
+            notes="",
+            independent=True,
+        )
+
+    if _UNSUPPORTED_FOLLOWUP.search(q):
+        return Reconstruction(
+            reconstructed_query=q,
+            notes="",
             independent=True,
         )
 
@@ -173,12 +272,35 @@ def reconstruct(question: str, session: SessionMemory | None) -> Reconstruction:
 
     return Reconstruction(
         reconstructed_query=q,
-        notes="independent question; reconstruction is a no-op",
+        notes="",
         independent=True,
     )
 
 
+def _constraint_airport_from_session(session: SessionMemory, kind: str) -> str | None:
+    want = (kind or "").strip().lower().replace(" ", "-")
+    if want:
+        for trace in session.last_traces or []:
+            if not isinstance(trace, dict):
+                continue
+            code = str(trace.get("airport") or "").strip().upper()
+            if not code:
+                continue
+            if str(trace.get("constraint_type") or "").strip().lower() == want:
+                return code
+    for trace in session.last_traces or []:
+        if isinstance(trace, dict) and trace.get("airport"):
+            return str(trace.get("airport")).strip().upper()
+    if session.last_entities:
+        return session.last_entities[0]
+    if session.last_peer_set:
+        return session.last_peer_set[0]
+    return None
+
+
 def _is_teoi_explain(question: str, codes: list[str], session: SessionMemory) -> bool:
+    if is_constraint_explain(question, codes=codes, session=session):
+        return False
     last = {str(t.get("airport", "")).upper() for t in session.last_traces}
     last.update(code.upper() for code in session.last_peer_set)
     if codes and last and not any(code in last for code in codes):
@@ -192,6 +314,8 @@ def _is_teoi_explain(question: str, codes: list[str], session: SessionMemory) ->
 
 
 def _looks_like_followup(question: str) -> bool:
+    if is_meta_question(question) or _UNSUPPORTED_FOLLOWUP.search(question):
+        return False
     q = question.lower()
     if re.search(r"\b(it|they|them|that|those|the same|again)\b", q):
         return True

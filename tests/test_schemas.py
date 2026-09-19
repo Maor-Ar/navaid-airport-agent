@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from navaid.config import CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
+from navaid.config import CONSTRAINT_EXPLANATIONS, CONSTRAINT_MULTIPLIERS, TEOI_WEIGHTS
 from navaid.schemas import (
     Answer,
     Citation,
@@ -16,6 +16,7 @@ from navaid.schemas import (
     Subgoal,
     SubgoalStatus,
     UnsupportedPart,
+    constraint_explanation_for,
 )
 
 
@@ -34,6 +35,11 @@ def test_constraint_multipliers() -> None:
     assert CONSTRAINT_MULTIPLIERS["mixed"] == 0.75
     assert CONSTRAINT_MULTIPLIERS["airside"] == 0.40
     assert CONSTRAINT_MULTIPLIERS["demand-bound"] == 0.30
+    assert set(CONSTRAINT_EXPLANATIONS) == set(CONSTRAINT_MULTIPLIERS)
+    assert constraint_explanation_for("MIXED") == CONSTRAINT_EXPLANATIONS["mixed"]
+    assert constraint_explanation_for("Demand-bound") == CONSTRAINT_EXPLANATIONS["demand-bound"]
+    assert constraint_explanation_for("demand_bound") == CONSTRAINT_EXPLANATIONS["demand-bound"]
+    assert constraint_explanation_for(None) == ""
 
 
 def test_scoring_trace_and_answer_roundtrip() -> None:

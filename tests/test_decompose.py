@@ -61,3 +61,58 @@ def test_why_bos_score_is_explain_not_rank() -> None:
     intents = [sg.intent for sg in subgoals]
     assert Intent.EXPLAIN_TEOI in intents
     assert Intent.EXPANSION_RANK not in intents
+
+
+def test_hello_is_chitchat_not_brief() -> None:
+    subgoals = decompose("hello")
+    assert [sg.intent for sg in subgoals] == [Intent.CHITCHAT]
+
+
+def test_what_can_you_do_is_capabilities_not_bos_brief() -> None:
+    for question in ("what can you do", "Tell me what can you do", "who are you"):
+        subgoals = decompose(question)
+        assert [sg.intent for sg in subgoals] == [Intent.CAPABILITIES], question
+        assert not subgoals[0].entities
+
+
+def test_capabilities_ignores_copied_airport_suffix() -> None:
+    subgoals = decompose("what can you do? (airports: LAX, SNA)")
+    assert [sg.intent for sg in subgoals] == [Intent.CAPABILITIES]
+    assert not subgoals[0].entities
+
+
+def test_why_bos_mixed_is_constraint_not_teoi() -> None:
+    from navaid.agent.sessions import SessionMemory
+
+    memory = SessionMemory(session_id="t-constraint")
+    memory.remember(
+        question="Which New England airports are strong expansion candidates?",
+        reconstructed_query="Which New England airports are strong expansion candidates?",
+        entities=["BOS", "BDL", "PVD", "PWM", "MHT", "BTV", "BGR", "ORH"],
+        peer_set=["BOS", "BDL", "PVD", "PWM", "MHT", "BTV", "BGR", "ORH"],
+        traces=[
+            {"airport": "BOS", "rank": 1, "teoi": 69.77, "constraint_type": "mixed"},
+            {"airport": "BDL", "rank": 2, "teoi": 61.2, "constraint_type": "landside"},
+        ],
+        intent="EXPANSION_RANK",
+    )
+    rec = reconstruct("why is BOS mixed?", memory)
+    subgoals = decompose(
+        rec.reconstructed_query,
+        session=memory,
+        reuse_traces=rec.reuse_traces,
+        explain_constraint=rec.explain_constraint,
+    )
+    intents = [sg.intent for sg in subgoals]
+    assert Intent.EXPLAIN_CONSTRAINT in intents
+    assert Intent.EXPLAIN_TEOI not in intents
+    assert Intent.EXPANSION_RANK not in intents
+    constraint = next(sg for sg in subgoals if sg.intent == Intent.EXPLAIN_CONSTRAINT)
+    assert constraint.entities == ["BOS"]
+
+
+def test_explain_why_bos_mixed_first_turn() -> None:
+    subgoals = decompose("explain why BOS is mixed")
+    assert any(sg.intent == Intent.EXPLAIN_CONSTRAINT for sg in subgoals)
+    assert not any(sg.intent == Intent.EXPLAIN_TEOI for sg in subgoals)
+    assert next(sg for sg in subgoals if sg.intent == Intent.EXPLAIN_CONSTRAINT).entities == ["BOS"]

@@ -6,6 +6,7 @@ import re
 from typing import TYPE_CHECKING
 
 from navaid.agent.entities import extract_airports, is_new_england
+from navaid.agent.reconstruct import core_question, is_constraint_explain, is_meta_question
 from navaid.config import NEW_ENGLAND_IATA
 from navaid.schemas import Intent, Subgoal, SubgoalStatus
 
@@ -38,6 +39,35 @@ _LONGHAUL = re.compile(r"\blong[\s-]?haul\b", re.IGNORECASE)
 _UNMET = re.compile(r"\bunmet\b", re.IGNORECASE)
 _BRIEF = re.compile(r"\b(brief|metrics|snapshot|profile)\b", re.IGNORECASE)
 _CARGO = re.compile(r"\bcargo\b", re.IGNORECASE)
+_CHITCHAT = re.compile(
+    r"^\s*(hi+|hello|hey+|thanks|thank you|thx|good (morning|afternoon|evening)|yo)"
+    r"[\s!.?,]*$",
+    re.IGNORECASE,
+)
+_CAPABILITIES = re.compile(
+    r"what can you do|what do you do|who are you|what are you|"
+    r"tell me what (you can|can you) do|your capabilities|\bcapabilities\b|"
+    r"^\s*help(?:\s+me)?\s*[?.!]?\s*$",
+    re.IGNORECASE,
+)
+_GLOSSARY = re.compile(
+    r"\b(what(?:'s|s| is| are)|define|meaning of|explain)\b.{0,48}"
+    r"\b(teoi|landside|airside|t-?100|leakage|taf|npias)\b",
+    re.IGNORECASE,
+)
+
+
+def _domain_question(q: str) -> bool:
+    return bool(
+        _EXPAND.search(q)
+        or _CONGEST.search(q)
+        or _COMPARE.search(q)
+        or _LONGHAUL.search(q)
+        or _UNMET.search(q)
+        or _BRIEF.search(q)
+        or _EXPLAIN.search(q)
+        or is_new_england(q)
+    )
 
 
 def decompose(
@@ -47,10 +77,33 @@ def decompose(
     catalog: MetricsCatalog | None = None,
     reuse_traces: bool = False,
     rerun_ranker: bool = False,
+    explain_constraint: bool = False,
 ) -> list[Subgoal]:
     """Emit one closed intent per part. Compound questions keep every part."""
 
     q = question.strip()
+    core = core_question(q)
+    if not _domain_question(core) and (
+        is_meta_question(q) or _CAPABILITIES.search(core) or _CHITCHAT.search(core)
+    ):
+        if _CHITCHAT.search(core) and not _CAPABILITIES.search(core):
+            return [
+                Subgoal(
+                    intent=Intent.CHITCHAT,
+                    status=SubgoalStatus.PENDING,
+                    query=core,
+                    notes="greeting",
+                )
+            ]
+        return [
+            Subgoal(
+                intent=Intent.CAPABILITIES,
+                status=SubgoalStatus.PENDING,
+                query=core,
+                notes="product capabilities",
+            )
+        ]
+
     subgoals: list[Subgoal] = []
     used_unsupported: set[str] = set()
 
@@ -81,7 +134,59 @@ def decompose(
             except Exception:
                 pass
 
-    if reuse_traces or _EXPLAIN.search(q):
+    if (
+        not reuse_traces
+        and _GLOSSARY.search(q)
+        and not _EXPLAIN.search(q)
+        and not _CONGEST.search(q)
+        and not _LONGHAUL.search(q)
+        and not _UNMET.search(q)
+        and not _COMPARE.search(q)
+        and not _BRIEF.search(q)
+        and not is_new_england(q)
+        and not entities
+    ):
+        return [
+            Subgoal(
+                intent=Intent.AIRPORT_BRIEF,
+                entities=[],
+                status=SubgoalStatus.PENDING,
+                query=q,
+                notes=f"glossary faq: {q}",
+            )
+        ]
+
+    constraint_q = explain_constraint or is_constraint_explain(q, codes=entities, session=session)
+    if constraint_q:
+        focus = list(entities[:1])
+        if not focus and session is not None:
+            kind_match = re.search(
+                r"\b(mixed|landside|airside|demand[- ]bound)\b", q, re.IGNORECASE
+            )
+            kind = (kind_match.group(1) if kind_match else "").lower().replace(" ", "-")
+            for trace in session.last_traces or []:
+                if not isinstance(trace, dict):
+                    continue
+                code = str(trace.get("airport") or "").strip().upper()
+                if not code:
+                    continue
+                if kind and str(trace.get("constraint_type") or "").strip().lower() == kind:
+                    focus = [code]
+                    break
+                if not focus:
+                    focus = [code]
+            if not focus and session.last_entities:
+                focus = [session.last_entities[0]]
+        subgoals.append(
+            Subgoal(
+                intent=Intent.EXPLAIN_CONSTRAINT,
+                entities=focus,
+                status=SubgoalStatus.PENDING,
+                query=q,
+                notes="constraint classifier; not a TEOI dump",
+            )
+        )
+    elif reuse_traces or _EXPLAIN.search(q):
         subgoals.append(
             Subgoal(
                 intent=Intent.EXPLAIN_TEOI,
@@ -141,7 +246,7 @@ def decompose(
                 entities=airport,
                 status=SubgoalStatus.PENDING,
                 query=q,
-                notes="include cargo" if _CARGO.search(q) else "cargo excluded unless asked",
+                notes="include cargo" if _CARGO.search(q) else "passenger segments only",
             )
         )
 
@@ -194,6 +299,20 @@ def decompose(
 
     supported = [s for s in subgoals if s.intent != Intent.UNSUPPORTED]
     if not supported:
+        if any(s.intent == Intent.UNSUPPORTED for s in subgoals):
+            return subgoals
+        if _GLOSSARY.search(q):
+            subgoals.insert(
+                0,
+                Subgoal(
+                    intent=Intent.AIRPORT_BRIEF,
+                    entities=[],
+                    status=SubgoalStatus.PENDING,
+                    query=q,
+                    notes=f"glossary faq: {q}",
+                ),
+            )
+            return subgoals
         if len(entities) >= 2 and _COMPARE.search(q):
             subgoals.insert(
                 0,
